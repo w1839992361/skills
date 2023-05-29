@@ -57,11 +57,56 @@ DB_PASSWORD=root
 
 1.先在控制台输入  
 
-php artisan make:controller Auth创建控制器,然后可以发现在 app/Http/Controllers/  目录下多了一个AuthController.php
+php artisan make:controller
+Auth创建控制器,然后可以发现在 app/Http/Controllers/  目录下多了一个AuthController.php
 
- 先在database/migrations/...sizes....php
+php artisan make:model Admin -m 
+Admin的模型,然后可以发现在 app/Models/ 目录下多了一个Admin.php
+然后在模型里面的数据改为这样(可以参考laravel models自带的User.php)
+```php
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User;  // 导入 User 模型
+use Illuminate\Notifications\Notifiable;
+
+class Admin extends User
+{
+    use HasFactory,Notifiable;
+
+   /*
+   可以被批量赋值的字段
+
+    如果不在模型类中指定 $fillable 属性，则默认情况下 Laravel 会保护模型中的所有字段，不允许直接从表单或其他来源批量赋值。
+
+    后面的模型中就不一一介绍了 如果要进行批量赋值就需要把要赋值的字段放到这里不然就会抛出 `MassAssignmentException
+
+    我这里写的字段是为了后面表单注册账号的时候用的
+   */
+    protected $fillable = [
+        "email","full_name","password","create_time"
+    ];
+
+
+    /*
+    获取 created_at 字段的值
+    这里是代表获取created_at 字段的时候 可以把字段进行格式化
+    但在这里 laravel自动把时间转换了
+    */
+    function getCreatedAtAttribute($t){
+        return $t;
+    }
+
+}
+```
+
+ 先在database/migrations/...admins....php
  写上我们需要的字段
  ![image](./img/Snipaste_2023-05-28_10-50-34.png)
+" 这里面的create_time 应该是不需要的 "
  php artisan migrate:refresh  进行回滚所有数据库迁移
 
  再去database/Seeders/DatabaseSeeder.php(用于给数据库添加数据的)
@@ -77,7 +122,7 @@ php artisan make:controller Auth创建控制器,然后可以发现在 app/Http/C
            "email"=>"admin@eaphoto.com",
             "full_name"=>"admin",
             "password"=>Hash::make("admin"),
-            "create_time"=>date("Y-m-d h:m") // 这一步其实应该不重要因为已经有$table->timestamps();
+            "create_time"=>date("Y-m-d h:m") // 这一步应该不需要因为已经有$table->timestamps();
         ]);
 ```
 
@@ -783,7 +828,255 @@ Route::get("user",[\App\Http\Controllers\UserController::class,"getAllUsers"]);
 1. 重置方法
 ```php
 
+    function resetUserById($id){
+      // 查询到要修改的用户
+        $user = User::find($id);
+        // 如果没有找到则返回404
+        if(!$user) return response()->json(["msg"=>"not found"],404);
+        // 调用我们在controller里面定义的方法
+        $pwd = $this->randPassword(8);
+        // 更新密码字段
+        $user->update(["password"=> Hash::make($pwd)]);
+        // 返回前端的数据
+        return response()->json([
+            "msg"=>"success",
+            "data"=>[
+            "id"=>$user->id,
+            "password"=>$pwd
+          ]
+        ]);
+    }
+
+
+    // Controller里面的重置方法
+    function randPassword($count = 8){
+        $str = "qwertyuiopasdfghjklzxcvbnm123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+        $pwd = '0';
+        for ($i=0;$i<$count-1;$i++){
+            $pwd .= $str[rand(0,strlen($str)-1)];
+        }
+        return $pwd;
+    }
+
+```
+
+2. 路由
+``` php
+
+Route::post("user/reset/{user_id}",[\App\Http\Controllers\UserController::class,"resetUserById"]);
+
+```
+
+
+#### c. Delete a User
+
+1. 删除用户方法
+
+``` php
+
+    function deleteUserById($id){
+      // 查询用户
+        $user = User::find($id);
+        // 没有就返回404
+        if(!$user) return response()->json(["msg"=>"not found"],404);
+        // 调用删除
+        $user->delete();
+        // 返回
+        return  response()->json(["msg"=>"success"]);
+    }
+
+```
+
+2. 路由
+
+```php
+
+Route::delete("user/{user_id}",[\App\Http\Controllers\UserController::class,"deleteUserById"]);
+
+```
+
+
+#### d. Reset a User's Cart
+
+1. 重置用户购物车方法
+
+``` php
+/*
+首先在这里  购物车的表我们把它当做photos表
+这个表我们在写 Order方法的时候就已经建立了
+里面的status有三种状态 uploaded(上传中) cart(购物车中) order(订单中)
+*/
+
+    function resetUserCartById($id){
+      // 查找用户
+        $user = User::find($id);
+        // 没有就返回404
+        if(!$user) return response()->json(["msg"=>"not found"],404);
+        // 购物车数量置空
+        $user->update(['cart_total' => null]);
+        // 去photo里面找到自己的并且是购物车状态的 然后删除
+        Photo::where("user_id",$id)->where("status","cart")->delete();
+        // 响应
+        return response()->json([
+            "msg"=>"success"
+        ]);
+    }
 
 
 ```
 
+2. 路由
+``` php
+
+Route::post("cart/reset/{user_id}",[\App\Http\Controllers\UserController::class,"resetUserCartById"]);
+
+```
+
+
+### Admin
+
+#### a. Get All Admins
+
+1. 获取所有管理员方法
+```php
+
+ function getAllAdmins(){
+    return response()->json([
+        "msg"=>"success",
+        // all 里面的是要查出来的字段
+        "data"=>Admin::all("id","email","full_name","created_at")
+     ]);
+  }
+
+```
+
+2. 路由
+```php
+
+Route::get("admin",[\App\Http\Controllers\AdminController::class,"getAllAdmins"]);
+
+```
+
+#### b. Create Admin
+
+1. 创建管理员方法
+``` php
+/*
+这里就需要用到$fillable
+在Admin模型里面写入
+
+protected $fillable = [
+   "email","full_name","password","create_time"(这个要是前面创建数据库的时候没有加就省略掉 包括下面用到的时候也可以省略掉)
+];
+
+
+use Illuminate\Support\Facades\Hash;  加密用的
+use Illuminate\Support\Facades\Validator;  校验用的
+
+*/
+    function createAdmin(Request $req){
+        // 获取请求中的数据
+        $data = $req->only("email","full_name","password","repeat_password");
+        // 使用 Laravel 自带的 Validator 类进行验证
+        $val = Validator::make($data,[
+            "email"=>"required|email|unique:admins",
+            "full_name"=>"required",
+            "password"=>"required",
+            "repeat_password"=>"required|same:password",
+        ]);
+
+        if($val->fails()){
+            $errorMsg = $val->errors()->first() =='The email has already been taken.' ?"email has already been used" :"data cannot be processed";
+             // 如果email已经被使用，则返回email has already been used，否则返回data cannot be processed
+        return response()->json([
+                    "msg"=>$errorMsg
+           ],422);
+        }
+        $row = Admin::create([
+           "email"=>$req->email,
+           "full_name"=>$req->full_name,
+           "password"=> Hash::make($req->password), // 进行hash加密
+            "create_time"=>date("Y-m-d h:m")
+        ]);
+        if($row){ // 如果创建成功返回
+            return response()->json([
+                "msg"=>"success",
+                "data"=>[
+                    "id"=>$row->id,
+                    "email"=>$row->email,
+                    "full_name"=>$row->full_name,
+                    "create_time"=>$row->create_time
+                ]
+            ]);
+        }
+    }
+
+```
+
+2. 路由
+```php
+
+Route::post("admin",[\App\Http\Controllers\AdminController::class,"createAdmin"]);
+
+```
+
+#### c.Reset Admin Password
+
+1. 重置密码方法
+``` php
+
+    function resetAdminPasswordById($id){
+      // 根据id查询管理员
+        $admin = Admin::find($id);
+        // 如果不存在返回404
+         if(!$admin) return response()->json(["msg"=>"not found"],404);
+         // 调用Controller里面的随机密码方法
+         $pwd = $this->randPassword(8);
+         // 更新
+         $admin->update(["password"=>Hash::make($pwd)]);
+          // 返回成功信息和新密码
+         return response()->json([
+             "msg"=>"success",
+             "data"=>[
+                 "id"=>$admin->id,
+                 "password"=>$pwd,
+             ]
+         ]);
+    }
+
+```
+
+
+2. 路由
+``` php
+
+Route::post("admin/reset/{admin_id}",[\App\Http\Controllers\AdminController::class,"resetAdminPasswordById"]);
+
+
+```
+
+#### d. Delete an Admin
+
+1. 删除管理员方法
+```php
+
+function deleteAdminById($id){
+      // 查询管理员
+      $admin = Admin::find($id);
+      // 没有就返回404
+      if(!$admin) return response()->json(["msg"=>"not found"],404);
+      // 删除查到的
+      $admin->delete();
+      // 响应
+      return response()->json(["msg"=>"success"]);
+  }
+
+```
+
+2. 路由
+
+```php
+
+Route::delete("admin/{admin_id}",[\App\Http\Controllers\AdminController::class,"deleteAdminById"]);
+
+```
