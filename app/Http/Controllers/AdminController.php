@@ -21,7 +21,9 @@ class AdminController extends Controller
     }
 
     function createAdmin(Request $req){
+        // 获取请求中的数据
         $data = $req->only("email","full_name","password","repeat_password");
+        // 使用 Laravel 自带的 Validator 类进行验证
         $val = Validator::make($data,[
             "email"=>"required|email|unique:admins",
             "full_name"=>"required",
@@ -29,23 +31,18 @@ class AdminController extends Controller
             "repeat_password"=>"required|same:password",
         ]);
         if($val->fails()){
-            if($val->errors()->first() == 'The email has already been taken.'){
-                return response()->json([
-                    "msg"=>"email has already been used"
-                ],422);
-            }else{
+            $errorMsg = $val->errors()->first() =='The email has already been taken.' ?"email has already been used" :"data cannot be processed";
                  return response()->json([
-                    "msg"=>"data cannot be processed"
+                    "msg"=>$errorMsg
                 ],422);
-            }
         }
         $row = Admin::create([
            "email"=>$req->email,
            "full_name"=>$req->full_name,
-           "password"=> Hash::make($req->password),
+           "password"=> Hash::make($req->password), // 进行hash加密
             "create_time"=>date("Y-m-d h:m")
         ]);
-        if($row){
+        if($row){ // 如果创建成功返回
             return response()->json([
                 "msg"=>"success",
                 "data"=>[
@@ -59,18 +56,22 @@ class AdminController extends Controller
     }
 
     function resetAdminPasswordById($id){
+        // 根据id查询管理员
         $admin = Admin::find($id);
-         if(!$admin) return response()->json(["msg"=>"not found"],404);
-         $pwd = Str::random(8);
-         $pwd = str_replace(substr($pwd,0,1),rand(0,9),$pwd);
-         $admin->update(["password"=>Hash::make($pwd)]);
-         return response()->json([
-             "msg"=>"success",
-             "data"=>[
-                 "id"=>$admin->id,
-                 "password"=>$pwd,
-             ]
-         ]);
+        // 如果不存在返回404
+        if(!$admin) return response()->json(["msg"=>"not found"],404);
+        // 调用Controller里面的随机密码方法
+        $pwd = $this->randPassword(8);
+        // 更新
+        $admin->update(["password"=>Hash::make($pwd)]);
+        // 返回成功信息和新密码
+        return response()->json([
+            "msg"=>"success",
+            "data"=>[
+                "id"=>$admin->id,
+                "password"=>$pwd,
+            ]
+        ]);
     }
 
     function deleteAdminById($id){

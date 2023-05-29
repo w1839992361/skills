@@ -14,4 +14,13 @@ class Controller extends BaseController
     function success($data){
         return response()->json(["msg"=>"success","data"=>$data]);
     }
+
+    function randPassword($count = 8){
+        $str = "qwertyuiopasdfghjklzxcvbnm123456789QWERTYUIOPASDFGHJKLZXCVBNM";
+        $pwd = '0';
+        for ($i=0;$i<$count-1;$i++){
+            $pwd .= $str[rand(0,strlen($str)-1)];
+        }
+        return $pwd;
+    }
 }

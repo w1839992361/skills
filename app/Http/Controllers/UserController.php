@@ -179,16 +179,14 @@ class UserController extends Controller
     function resetUserById($id){
         $user = User::find($id);
         if(!$user) return response()->json(["msg"=>"not found"],404);
-        $pwd = Str::random(8);
-        $pwd = str_replace(substr($pwd,0,1),rand(0,9),$pwd);
+        $pwd = $this->randPassword(8);
         $user->update(["password"=> Hash::make($pwd)]);
-        $data = [
-            "id"=>$user->id,
-            "password"=>$pwd
-        ];
         return response()->json([
             "msg"=>"success",
-            "data"=>$data
+            "data"=>[
+                "id"=>$user->id,
+                "password"=>$pwd
+            ]
         ]);
     }
 
@@ -201,15 +199,9 @@ class UserController extends Controller
 
     function resetUserCartById($id){
         $user = User::find($id);
-        if(!$user){
-            return response()->json(["msg"=>"not found"],404);
-        }
-        $user->cart_total=null;
-        $user->save();
-        $photos  = Photo::where("user_id",$id)->where("status","cart")->get();
-        foreach ($photos as $item){
-            $item->delete();
-        }
+        if(!$user) return response()->json(["msg"=>"not found"],404);
+        $user->update(['cart_total' => null]);
+        Photo::where("user_id",$id)->where("status","cart")->delete();
         return response()->json([
             "msg"=>"success"
         ]);
