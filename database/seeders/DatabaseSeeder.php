@@ -82,97 +82,97 @@ class DatabaseSeeder extends Seeder
 
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>550,
             "name"=>"black",
             "size_id"=>1,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>550,
             "name"=>"red",
             "size_id"=>1,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>980,
             "name"=>"black",
             "size_id"=>2,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>850,
             "name"=>"red",
             "size_id"=>2,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>520,
             "name"=>"black",
             "size_id"=>3,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>1150,
             "name"=>"red",
             "size_id"=>3,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>450,
             "name"=>"red",
             "size_id"=>4,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>5506,
             "name"=>"white",
             "size_id"=>4,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>2501,
             "name"=>"red",
             "size_id"=>5,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>5.5,
             "name"=>"green",
             "size_id"=>5,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>2220,
             "name"=>"blue",
             "size_id"=>6,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>1999,
             "name"=>"yellow",
             "size_id"=>6,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>771,
             "name"=>"red",
             "size_id"=>7,
         ]);
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/frame_1.jpg",
+            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
             "price"=>2888,
             "name"=>"pink",
             "size_id"=>7,
