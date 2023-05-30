@@ -160,7 +160,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 */
 // Request就是前端的请求体
- public function login(Request $request)
+ function login(Request $request)
 {
     $data = $request->only('email', 'password');
     // Validator是laravel自带的校验里面有很多定义好的规则
@@ -1026,4 +1026,104 @@ Route::post("admin/reset/{admin_id}",[\App\Http\Controllers\AdminController::cla
 ```php
 
 Route::delete("admin/{admin_id}",[\App\Http\Controllers\AdminController::class,"deleteAdminById"]);
+```
+
+
+## Client Panel API
+
+
+### Auth
+
+#### a. Login
+
+##### 1. 配置Auth
+在管理员那已经配置了 web 和 api
+只需要在copy一份出来改一下(把provider改为users)
+![image](./img/Snipaste_2023-05-30_16-45-31.png)
+```php
+
+  'user_web' => [
+      'driver' => 'session',
+      'provider' => 'users',
+  ],
+
+  'user_api' => [
+      'driver' => 'token',
+      'provider' => 'users',
+      'hash' => false,
+      "input_key"=>"token",
+      "storage_key"=>"token"
+  ],
+```
+
+下面也需要对应增加一个provider
+![image](./img/Snipaste_2023-05-30_16-45-02.png)
+```php
+
+  'users' => [
+      'driver' => 'eloquent',
+      'model' => App\Models\User::class,
+  ],
+```
+##### 2. 登录方法
+UserController.php
+```php
+
+  // 用户登录
+  function login(Request $req){
+      $data = $req->only("email","password");
+
+      $val = Validator::make($data,[
+          "email"=>"required|email",
+          "password"=>"required"
+      ]);
+
+      if($val->fails()){
+        // controller类里面自定义的方法
+          return $this->dataUnprocessedResponse();
+      }
+      /*
+      这里和管理端的区别:
+      " 这里指定了守卫名称,因为管理员用的是web 不指定的话默认就是web 可以在auth.php里面设置 "
+      */
+      if(Auth::guard("user_web")->attempt($data)){
+          $user = Auth::guard("user_web")->user();
+          $user->update(["token"=>md5($req->email)]);
+          return $this->successResponse([
+              "id"=>$user->id,
+              "email"=>$user->email,
+              "username"=>$user->username,
+              "token"=>$user->token,
+              "create_time"=>$user->create_time,
+          ]);
+      }
+      // 在controller类里面自定义的方法
+      return $this->customResponse("user credentials are invalid",401);
+  }
+```
+
+以上用到的方法 都在controller类里面有封装
+Controller.php
+```php
+
+  // 成功响应
+  function successResponse($data = null){
+      return response()->json($data? ["msg"=>"success","data"=>$data]:["msg"=>"success",]);
+  }
+
+  // 未找到错误响应
+  function notFoundResponse(){
+      return response()->json( ["msg"=>"not found"],404);
+  }
+
+  // 参数错误响应
+  function dataUnprocessedResponse(){
+      return response()->json( ["msg"=>"data cannot be processed"],422);
+  }
+
+  // 自定义响应和状态码
+  function customResponse($msg,$status){
+      return response()->json( ["msg"=>$msg],$status);
+  }
+
 ```
