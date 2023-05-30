@@ -28,7 +28,7 @@ vendor 目录包括 Composer 依赖的第三方库。
 
 然后找到XAMPP的目录把我们的laravel放到里面的htdocs文件夹下,然后打开127.0.0.1就可以到laravel了点击如果可以看到laravel的页面就说明启动成功了
 
-<img title="" src="./img/Snipaste_2023-05-24_20-43-5##### 5.png" alt="" data-align="inline">
+<img title="" src="./img/Snipaste_2023-05-24_20-43-55.png" alt="" data-align="inline">
 
 ## 三.项目配置
 
@@ -376,13 +376,11 @@ ps: 关于金额用的都是integer,然后存的时候把价格*100,取的时候
 ```php
    function getAllSize(){
     // 获取所有 Size 模型实例
-    $size = Size::all();
-    // 遍历所有 Size 实例，将价格除以 100，以便前端展示时更清晰
-    foreach ($size as $item){
-        $item->price = $item->price/100;
-    }
-    // 取消对 $item 的引用，避免后续操作影响数据
-    unset($item);
+    $size = Size::all()->map(function ($item){
+      // 使用map方法讲价格除以100 方便前端展示
+        $item->price /= 100;
+        return $item;
+    });
     // 返回 JSON 格式的响应，包括成功信息和所有 Size 实例
     return response()->json([
         "msg"=>"success",
@@ -444,13 +442,14 @@ Schema::create('frames', function (Blueprint $table) {
       $table->string("url");
       $table->integer("price");
       $table->string("name");
-      // 创建外键字段，关联 sizes 表中的记录
+      // 创建外键字段(默认为size_id)，关联 sizes 表中的记录(默认与sizes表的主键)
       $table->foreignIdFor(\App\Models\Size::class)->constrained();
       $table->timestamps();
 });
 /*
 通过创建外键字段，确保 frames 表中的每条记录都关联到了 sizes 表中的一条记录，从而保证数据的完整性和一致性。
 注意，可以使用级联删除操作，当 sizes 表中的一条记录被删除时，关联的 frames 表中的所有记录也会被自动删除。
+
 cascadeOnDelete(); 这个方法可以自己去看一下
 */
 ```
@@ -460,23 +459,20 @@ cascadeOnDelete(); 这个方法可以自己去看一下
 
 ```php
    // 方法1 ->
-  function getAllFrame(){
-    // 获取所有相框
-    $frames = Frame::all();
-    // 遍历相框，查询对应的尺寸和价格，并更新size和price中
-    foreach ($frames as $item){
+ function getAllFrame(){
+    $frames = Frame::all()->map(function ($item){
         $item->size = Size::find($item->size_id)->size;
-        $item->price = $item->price/100;
-    }
-    // 解除 item 的引用 unset(item);
-    unset($item);
-    return  response()->json([
-        "msg"=>"success",
-        "data"=>$frames
-    ]);
-  }
+        $item->price /=100;
+        return $item;
+    });
 
-// 方法2 ->
+    return  response()->json([
+      "msg"=>"success",
+      "data"=>$frames
+  ]);
+ }
+
+  // 方法2 ->
   function getAllFrame(){
       // 获取所有相框
       $frames = Frame::join("sizes","frames.size_id","=","sizes.id")->select("frames.id","frames.url","frames.price","frames.name","sizes.size")->get()->map(function ($item){
