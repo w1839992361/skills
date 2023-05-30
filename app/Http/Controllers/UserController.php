@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Frame;
 use App\Models\Photo;
-use App\Models\Size;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-
+    // 用户登录
     function login(Request $req){
         $data = $req->only("email","password");
 
@@ -24,32 +21,25 @@ class UserController extends Controller
         ]);
 
         if($val->fails()){
-            return response()->json([
-                "msg"=>"data cannot be processed"
-            ],422);
+            return $this->dataUnprocessedResponse();
         }
 
         if(Auth::guard("user_web")->attempt($data)){
             $user = Auth::guard("user_web")->user();
-            $user->token = md5($req->email);
-            $user->save();
-            return response()->json([
-             "msg"=>"success",
-                "data"=>[
-                    "id"=>$user->id,
-                    "email"=>$user->email,
-                    "username"=>$user->username,
-                    "token"=>$user->token,
-                    "create_time"=>$user->create_time,
-                ]
+            $user->update(["token"=>md5($req->email)]);
+            return $this->successResponse([
+                "id"=>$user->id,
+                "email"=>$user->email,
+                "username"=>$user->username,
+                "token"=>$user->token,
+                "create_time"=>$user->create_time,
             ]);
         }
 
-        return response()->json([
-            "msg"=>"user credentials are invalid"
-        ],401);
+        return $this->customResponse("user credentials are invalid",401);
     }
 
+    // 注册用户
     function register(Request $req){
         $data = $req->only("email","username","password","repeat_password");
 
@@ -62,13 +52,9 @@ class UserController extends Controller
 
         if($val->fails()){
             if($val->errors()->first() == 'The email has already been taken.'){
-                return response()->json([
-                    "msg"=>"email has already been used"
-                ],422);
+                return $this->customResponse("email has already been used",422);
             }else{
-                return response()->json([
-                    "msg"=>"data cannot be processed"
-                ],422);
+                return $this->dataUnprocessedResponse();
             }
         }
 
@@ -80,130 +66,100 @@ class UserController extends Controller
         ]);
 
         if($row){
-            return response()->json([
-                "msg"=>"success",
-                "data"=>[
-                    "id"=>$row->id,
-                    "email"=>$row->email,
-                    "full_name"=>$row->full_name,
-                    "create_time"=>$row->create_time
-                ]
+            return $this->successResponse([
+                "id"=>$row->id,
+                "email"=>$row->email,
+                "full_name"=>$row->full_name,
+                "create_time"=>$row->create_time
             ]);
         }
     }
 
+    // 用户退出
     function logout(){
         $user = Auth::user();
-        $user->token = null;
-        $user->save();
-        return response()->json([
-            "msg"=>"success"
-        ]);
+        $user->update(["token"=>null]);
+        return $this->successResponse();
     }
 
+    // 重置密码
     function resetPassword(Request $req){
         $user = Auth::user();
         $data =  $req->only("original_password","new_password","repeat_password");
-//        $da = [
-//            "email"=>$user->email,
-//            "password"=>$req->original_password
-//        ];
         $val = Validator::make($data,[
             "original_password"=>"required",
             "new_password"=>"required",
             "repeat_password"=>"required|same:new_password",
         ]);
-//        if($val->fails() || !Auth::guard("user_web")->attempt($da)){
         if($val->fails()){
-            return response()->json([
-                "msg"=>"data cannot be processed"
-            ],422);
+            return $this->dataUnprocessedResponse();
         }
-        $user->password = Hash::make($req->new_password);
-        $user->save();
-        return response()->json([
-            "msg"=>"success",
-            "data"=>[
-                "id"=>$user->id,
-                "email"=>$user->email,
-                "username"=>$user->username,
-                "create_time"=>$user->create_time,
-            ],
+        $user->update(["password"=>Hash::make($req->new_password)]);
+
+        return $this->successResponse([
+            "id"=>$user->id,
+            "email"=>$user->email,
+            "username"=>$user->username,
+            "create_time"=>$user->create_time,
         ]);
     }
 
-
-    //
+    // 管理员获取所有用户
     function getAllUsers(){
         $users = User::all();
-        return response()->json([
-            "msg"=>"success",
-            "data"=> $users
-        ]);
+        return $this->successResponse($users);
     }
 
+    // 管理员获取所有用户的购物车
     function getAllUsersCart(){
         $user = User::all();
         $data = [];
         foreach ($user as $item){
             $photos = Photo::where("user_id",$item->id)->where("status","cart")->get();
+            $item->cart_total = 0;
             foreach ($photos as $child){
-                if($child->frame_id){
-                    $frame = Frame::find($child->frame_id);
-                    $child->frame_price = $frame->price/100;
-                    $child->frame_name = $frame->name;
-                }else{
-                    $child->frame_price = 0;
-                    $child->frame_name = "no frame";
-                }
-                $size = Size::find($child->size_id);
-                $child->size = $size->size;
-                $child->print_price = $size->price/100;
+                $child->frame_price = $child->frame ?$child->frame->price/100 :0;
+                $child->print_price = $child->size->price/100;
+                $item->cart_total+= $child->frame_price+$child->print_price;
             }
-            $total = 0;
-            foreach ($photos as $child){
-                $total+= $child->frame_price+$child->print_price;
-            }
-            $item->cart_total =$total;
-            if($total >0){
+
+            if($item->cart_total >0){
                 array_push($data,$item);
             }
         }
         unset($item);
-        return response()->json([
-            "msg"=>"success",
-            "data"=> $data
-        ]);
+        return $this->successResponse($data);
     }
 
+    // 管理员根据id中指密码
     function resetUserById($id){
         $user = User::find($id);
-        if(!$user) return response()->json(["msg"=>"not found"],404);
+        if(!$user) return $this->notFoundResponse();
+
         $pwd = $this->randPassword(8);
         $user->update(["password"=> Hash::make($pwd)]);
-        return response()->json([
-            "msg"=>"success",
-            "data"=>[
-                "id"=>$user->id,
-                "password"=>$pwd
-            ]
+
+        return $this->successResponse([
+            "id"=>$user->id,
+            "password"=>$pwd
         ]);
     }
 
+    // 管理员根据id删除用户
     function deleteUserById($id){
         $user = User::find($id);
-        if(!$user) return response()->json(["msg"=>"not found"],404);
+        if(!$user) return $this->notFoundResponse();
         $user->delete();
-        return  response()->json(["msg"=>"success"]);
+        return $this->successResponse();
     }
 
+    // 管理员重置用户购物车
     function resetUserCartById($id){
         $user = User::find($id);
-        if(!$user) return response()->json(["msg"=>"not found"],404);
+        if(!$user) return $this->notFoundResponse();
         $user->update(['cart_total' => null]);
         Photo::where("user_id",$id)->where("status","cart")->delete();
-        return response()->json([
-            "msg"=>"success"
-        ]);
+        return $this->successResponse();
     }
+
 }

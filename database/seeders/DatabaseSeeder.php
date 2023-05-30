@@ -206,6 +206,19 @@ class DatabaseSeeder extends Seeder
             "status"=>"Valid",
         ]);
 
+        Order::create([
+            "full_name"=>"Matthew",
+            "phone_number"=>"10001000",
+            "shipping_address"=>"Where",
+            "card_number"=>"3223222222",
+            "name_on_card"=>"Matthew XXX",
+            "exp_date"=>'2023-05-16',
+            "cvv"=>"246",
+            "total"=>0,
+            "order_placed"=>'2023-05-16 13:58',
+            "status"=>"Valid",
+        ]);
+
         Photo::create([
             "edited_url"=>null,
             "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",

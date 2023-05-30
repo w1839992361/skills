@@ -13,20 +13,14 @@ use function Illuminate\Events\queueable;
 
 class OrderController extends Controller
 {
-    //
+    // 管理员端获取所有订单信息
     function  getAllOrders(){
         $orders = Order::with("photos")->get();
         foreach ($orders as $item){
             $total = 0;
             foreach ($item->photos as $child){
-                if($child->frame_id){
-                    $frame = Frame::find($child->frame_id);
-                    $child->frame_price = $frame->price/100;
-                    $child->frame_name = $frame->name;
-                }else{
-                    $child->frame_price = 0;
-                    $child->frame_name = "no frame";
-                }
+                $child->frame_price = $child->frame ? $child->frame->price/100 : 0;
+                $child->frame_name = $child->frame ?  $child->frame->name : "no frame";
                 $size = Size::find($child->size_id);
                 $child->size = $size->size;
                 $child->print_price = $size->price/100;
@@ -35,81 +29,62 @@ class OrderController extends Controller
             $item->total = $total;
         }
         unset($item);
-        return  response()->json([
-            "msg"=>"success",
-            "data"=>$orders
-        ]);
+        return  $this->successResponse($orders);
     }
 
+    // 管理员端通过id取消订单
     function cancelOrderById($id){
         $order = Order::where("status","Valid")->where("id",$id)->get();
-        if(!count($order)) return response()->json(["msg"=>"not found"],404);
+        if(!count($order)) return $this->notFoundResponse();
         $order[0]->update(["status"=>"Cancel"]);
-        return  response()->json(["msg"=>"success"]);
+        return $this->successResponse();
     }
 
+    // 管理员端通过id完成订单
     function completeOrderById($id){
         $order = Order::where("status","Valid")->where("id",$id)->get();
-        if(!count($order)) return response()->json(["msg"=>"not found"],404);
+        if(!count($order)) return $this->notFoundResponse();
         $order[0]->update(["status"=>"Complete"]);
-        return  response()->json(["msg"=>"success"]);
+        return  $this->successResponse();
     }
 
-
+    // 客户端获取用户自己的订单
     function getMyOrder(){
         $user = Auth::user();
         $userId = $user->id;
-        $order = Order::with("photos")->get();
-        foreach ($order as $item) {
-            foreach ($item->photos as $child) {
-                $size = Size::find($child->size_id);
-                $child->size = $size->size;
-                $child->print_price = $size->price / 100;
-
-                if ($child->frame_id) {
-                    $frame = Frame::find($child->frame_id);
-                    $child->frame_price = $frame->price / 100;
-                    $child->frame_name = $frame->name;
-                } else {
-                    $child->frame_price = 0;
-                    $child->frame_name = "no frame";
+        $orders = Order::with("photos")->get();
+        $data = [];
+        foreach ($orders as $order){
+            $isOwn = false;
+            $order->total = 0;
+            foreach ($order->photos as $photo){
+                if($photo->user_id == $userId){
+                    $isOwn = true;
+                    break;
                 }
-                $total = $child->print_price + $child->frame_price;
-                $item->total = $total;
+            }
+            if($isOwn){
+                foreach ($order->photos as $photo){
+                    $size = Size::find($photo->size_id);
+                    $photo->size = $size->size;
+                    $photo->print_price = $size->price/100;
+                    if($photo->frame_id){
+                        $frame = Frame::find($photo->frame_id);
+                        $photo->frame_name = $frame->name;
+                        $photo->frame_price = $frame->price/100;
+                    }else{
+                        $photo->frame_name = "no frame";
+                        $photo->frame_price = 0;
+                    }
+                    $order->total += $photo->print_price + $photo->frame_price;
+                }
+                array_push($data, $order);
             }
         }
-//        $data = [];
-////            foreach ($item->photos as $child){
-////                if($child->user_id == $userId){
-////                    array_push($data,$item);
-////                    break;
-////                }
-////            }
-////            foreach ($item->photos as $key=>$child2){
-////                $size = Size::find($child2->size_id);
-////                $child2->size = $size->size;
-////                $child2->print_price = $size->price/100;
-////                if($child2->frame_id){
-////                    $frame = Frame::find($child2->frame_id);
-////                    $child2->frame_price = $frame->price/100;
-////                    $child2->frame_name = $frame->name;
-////
-////                }else{
-////                    $child2->frame_price = 0;
-////                    $child2->frame_name = "no frame";
-////                }
-////                $total = $child2->print_price + $child2->frame_price;
-////                $item->total = $total;
-////                if($child2->status !='order'){
-////                    unset($item->photos[$key]);
-////                }
-////
-////            }
-//        }
-        unset($item);
-        return response()->json(["msg"=>"success","data"=>$order]);
+        return $this->successResponse($data);
     }
 
+    // 客户端创建订单
     function createOrder(Request $req){
         $data = $req->only("full_name","phone_number","shipping_address","card_number","name_on_card","exp_date","cvv","photo_id_list");
 
@@ -180,16 +155,14 @@ class OrderController extends Controller
        }
     }
 
-
+    // 客户端取消
     function cancelOrder($id){
         $order = Order::find($id);
         $photos = Photo::where("order_id",$id)->get();
-        if(!$order || !$photos) return response()->json(["msg"=>"not found"],404);
-        foreach ($photos as $photo){
-            $photo->delete();
-        }
+        if(!$order || !$photos) return $this->notFoundResponse();
+        $photos->delete();
         $order->delete();
-        return response()->json(['msg'=>"success"]);
+        return $this->successResponse();
     }
 
 }

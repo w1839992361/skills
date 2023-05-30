@@ -18,9 +18,7 @@ class AuthController extends Controller
         ]);
 
         if($val->fails()){
-            return response()->json([
-                "msg"=>"data cannot be processed"
-            ],422);
+            return $this->dataUnprocessedResponse();
         }
 
         if(Auth::attempt($data)){
@@ -28,22 +26,17 @@ class AuthController extends Controller
             $user->token = md5($user->email);
             $user->save();
 
-            return response()->json([
-                "msg"=>"success",
-                "data"=>[
-                    "id"=>$user->id,
-                    "email"=>$user->email,
-                    "full_name"=>$user->full_name,
-                    "token"=>$user->token,
-                    "created_at"=>$user->created_at,
-//                    "create_time"=>$user->create_time
-                ]
+            return $this->successResponse([
+                "id"=>$user->id,
+                "email"=>$user->email,
+                "full_name"=>$user->full_name,
+                "token"=>$user->token,
+                "created_at"=>$user->created_at,
+//              "create_time"=>$user->create_time
             ]);
         }
 
-        return response()->json([
-            "msg"=>"user credentials are invalid"
-        ],401);
+        return $this->customResponse("user credentials are invalid",401);
     }
 
     // logout
@@ -51,9 +44,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $user->token = null;
         $user->save();
-        return response()->json([
-            "msg"=>"success"
-        ]);
+        return $this->successResponse();
     }
 
 

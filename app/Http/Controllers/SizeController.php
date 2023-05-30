@@ -10,25 +10,21 @@ class SizeController extends Controller
 {
     //
     function getAllSize(){
-        $size = Size::all();
-        foreach ($size as $item){
-            $item->price = $item->price/100;
-        }
-        unset($item);
-        return response()->json([
-            "msg"=>"success",
-            "data"=> $size
-        ]);
+        $size = Size::all()->map(function ($item){
+            $item->price /= 100;
+            return $item;
+        });
+        return $this->successResponse($size);
     }
 
     function updateSize(Request $req,$id){
         $size = Size::find($id);
-        if (!$size) return response()->json(["msg"=>"not found"],404);
-        if($req->get("price") <0) return response()->json([],422);
+        if (!$size) return $this->notFoundResponse();
+
+        if($req->get("price") <0) return $this->dataUnprocessedResponse();
+
         $size->update(["price"=>$req->get("price")*100]);
-        return response()->json([
-            "msg"=>"success",
-            "data"=>$size
-        ]);
+
+        return $this->successResponse($size);
     }
 }

@@ -20,4 +20,8 @@ class Photo extends Model
     function order(){
         return $this->belongsTo(Photo::class);
     }
+
+    function frame(){
+        return $this->belongsTo(Frame::class);
+    }
 }

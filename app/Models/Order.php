@@ -33,7 +33,7 @@ class Order extends Model
 //        return $this->hasMany(Photo::class,"order_id","id");
     }
 
-    function sigSize(){
+    function size(){
         return $this->belongsTo(Size::class);
     }
 
