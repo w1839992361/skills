@@ -51,7 +51,8 @@ class UserController extends Controller
         ]);
 
         if($val->fails()){
-            if($val->errors()->first() == 'The email has already been taken.'){
+            $errorMsg = $val->errors()->first();
+            if($errorMsg == 'The email has already been taken.'){
                 return $this->customResponse("email has already been used",422);
             }else{
                 return $this->dataUnprocessedResponse();
@@ -85,13 +86,14 @@ class UserController extends Controller
     // 重置密码
     function resetPassword(Request $req){
         $user = Auth::user();
-        $data =  $req->only("original_password","new_password","repeat_password");
+        $data = $req->only("original_password","new_password","repeat_password");
         $val = Validator::make($data,[
             "original_password"=>"required",
             "new_password"=>"required",
             "repeat_password"=>"required|same:new_password",
         ]);
-        if($val->fails()){
+        // Hash check 检查原密码是否正确 题目无要求 只是做一下拓展这样更加合理
+        if($val->fails() || !Hash::check($req->original_password, $user->password)){
             return $this->dataUnprocessedResponse();
         }
         $user->update(["password"=>Hash::make($req->new_password)]);

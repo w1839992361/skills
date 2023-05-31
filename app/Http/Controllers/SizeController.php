@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SizeController extends Controller
 {
-    //
+    // 获取所有尺寸
     function getAllSize(){
         $size = Size::all()->map(function ($item){
             $item->price /= 100;

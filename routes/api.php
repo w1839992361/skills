@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 Route::prefix("v1")->group(function (){
 
@@ -75,10 +75,11 @@ Route::prefix("v1")->group(function (){
 
            Route::post("photo/frame/{photo_id}/{frame_id?}",[\App\Http\Controllers\PhotoController::class,"setFrame"]);
 
+           Route::get("frame",[\App\Http\Controllers\FrameController::class,"getAllFrame"]);
+
            Route::get("cart",[\App\Http\Controllers\PhotoController::class,"getCart"]);
            Route::post("cart",[\App\Http\Controllers\PhotoController::class,"appendToCart"]);
 
-           Route::get("frame",[\App\Http\Controllers\FrameController::class,"getAllFrame"]);
 
            Route::get("order",[\App\Http\Controllers\OrderController::class,"getMyOrder"]);
            Route::post("order",[\App\Http\Controllers\OrderController::class,"createOrder"]);

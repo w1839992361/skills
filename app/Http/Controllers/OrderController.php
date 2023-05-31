@@ -36,7 +36,7 @@ class OrderController extends Controller
     function cancelOrderById($id){
         $order = Order::where("status","Valid")->where("id",$id)->get();
         if(!count($order)) return $this->notFoundResponse();
-        $order[0]->update(["status"=>"Cancel"]);
+        $order[0]->update(["status"=>"Invalid"]);
         return $this->successResponse();
     }
 
@@ -44,7 +44,7 @@ class OrderController extends Controller
     function completeOrderById($id){
         $order = Order::where("status","Valid")->where("id",$id)->get();
         if(!count($order)) return $this->notFoundResponse();
-        $order[0]->update(["status"=>"Complete"]);
+        $order[0]->update(["status"=>"Completed"]);
         return  $this->successResponse();
     }
 
@@ -160,8 +160,7 @@ class OrderController extends Controller
         $order = Order::find($id);
         $photos = Photo::where("order_id",$id)->get();
         if(!$order || !$photos) return $this->notFoundResponse();
-        $photos->delete();
-        $order->delete();
+        $photos->update(["status"=>"Invalid"]);
         return $this->successResponse();
     }
 
