@@ -690,8 +690,8 @@ OrderController.php
       $order = Order::where("status","Valid")->where("id",$id)->get();
       // 如果没有找到对应的订单，则返回404状态码和错误信息
       if(!count($order)) return response()->json(["msg"=>"not found"],404);
-      // 将订单状态更新为"Cancel"
-      $order[0]->update(["status"=>"Cancel"]);
+      // 将订单状态更新为"Invalid"
+      $order[0]->update(["status"=>"Invalid"]);
       return  response()->json(["msg"=>"success"]);
   }
 ```
@@ -713,8 +713,8 @@ OrderController.php
       $order = Order::where("status","Valid")->where("id",$id)->get();
        // 如果没有找到对应的订单，则返回404状态码和错误信息
       if(!count($order)) return response()->json(["msg"=>"not found"],404);
-      // 将订单状态更新为"Complete"
-      $order[0]->update(["status"=>"Complete"]);
+      // 将订单状态更新为"Completed"
+      $order[0]->update(["status"=>"Completed"]);
       return  response()->json(["msg"=>"success"]);
   }
 ```
@@ -1125,5 +1125,477 @@ Controller.php
   function customResponse($msg,$status){
       return response()->json( ["msg"=>$msg],$status);
   }
+
+```
+
+##### 3. 路由
+
+```php
+
+ Route::prefix("client")->group(function (){
+    Route::post('login',[\App\Http\Controllers\UserController::class,"login"]);
+ })
+```
+
+
+#### b. Register
+
+##### 1. 注册方法
+
+```php
+
+  function register(Request $req){
+      $data = $req->only("email","username","password","repeat_password");
+
+      /*
+      unique:users  代表在users表里是唯一的
+      same:password 代表和password一致
+      */
+      $val = Validator::make($data,[
+          "email"=>"required|email|unique:users",
+          "username"=>"required",
+          "password"=>"required",
+          "repeat_password"=>"required|same:password"
+      ]);
+
+      if($val->fails()){
+          $errorMsg = $val->errors()->first();
+          if($errorMsg == 'The email has already been taken.'){
+              return $this->customResponse("email has already been used",422);
+          }else{
+              return $this->dataUnprocessedResponse();
+          }
+      }
+      /*
+      记得在User模型当中写入要填充的字段
+
+      protected $fillable = [
+          "password","email","create_time","username"
+      ];
+
+      */
+      $row = User::create([
+          "email"=>$req->email,
+          "username"=>$req->username,
+          "password"=> Hash::make($req->password),
+          "create_time"=>date("Y-m-d h:m")
+      ]);
+
+      if($row){
+          return $this->successResponse([
+              "id"=>$row->id,
+              "email"=>$row->email,
+              "full_name"=>$row->full_name,
+              "create_time"=>$row->create_time
+          ]);
+      }
+  }
+```
+
+##### 2. 路由
+和login的路由同级
+```php
+
+Route::post('register',[\App\Http\Controllers\UserController::class,"register"]);
+```
+
+
+#### c. Logout
+
+##### 1. 登出方法
+
+```php
+  function logout(){
+      /*
+      这里没有指定guards是因为中间件那里已经通过了
+      具体看下面的路由
+      */
+      $user = Auth::user();
+      $user->update(["token"=>null]);
+      return $this->successResponse();
+  }
+```
+
+
+##### 2. 路由
+
+```php
+
+/*
+这里在加一个中间件认证的group,后面需要token认证的都写在里面
+
+
+当我们在路由中使用 auth 中间件时，实际上是在调用 Auth::guard() 方法，该方法默认使用 web 守卫，因此在函数中需要指定守卫来获取当前用户信息。但是，在我们的代码中，我们使用了 auth:user_api 中间件，这意味着我们已经指定了守卫，因此在函数中不需要再指定守卫了。
+*/
+Route::middleware("auth:user_api")->group(function (){
+
+Route::post('logout',[\App\Http\Controllers\UserController::class,"logout"]);
+
+})
+```
+
+#### d. Reset Password
+
+##### 1. 重置方法
+
+```php
+
+  function resetPassword(Request $req){
+      $user = Auth::user();
+      $data = $req->only("original_password","new_password","repeat_password");
+      $val = Validator::make($data,[
+          "original_password"=>"required",
+          "new_password"=>"required",
+          "repeat_password"=>"required|same:new_password",
+      ]);
+      // Hash check 检查原密码是否正确 题目无要求 只是做一下拓展这样更加合理
+      if($val->fails() || !Hash::check($req->original_password, $user->password)){
+          return $this->dataUnprocessedResponse();
+      }
+      $user->update(["password"=>Hash::make($req->new_password)]);
+
+      return $this->successResponse([
+          "id"=>$user->id,
+          "email"=>$user->email,
+          "username"=>$user->username,
+          "create_time"=>$user->create_time,
+      ]);
+  }
+```
+
+
+##### 2. 路由
+
+```php
+
+Route::post('user/reset',[\App\Http\Controllers\UserController::class,"resetPassword"]);
+```
+
+
+### Size
+
+#### a. Get All Sizes
+
+##### 1. 获取方法
+
+```php
+
+  function getAllSize(){
+      $size = Size::all()->map(function ($item){
+          $item->price /= 100;
+          return $item;
+      });
+      return $this->successResponse($size);
+  }
+```
+
+##### 2. 路由
+
+```php
+
+ Route::get("size",[\App\Http\Controllers\SizeController::class,"getAllSize"]);
+```
+
+
+### Photo
+
+#### a. Get All Photos
+
+##### 1. 获取方法
+
+```php
+
+  function getMyPhotos(){
+    $user = Auth::user();
+    $photos = Photo::where("user_id",$user->id)->get(['id', 'edited_url', 'original_url', 'framed_url', 'status']);;
+    return $this->successResponse($photos);
+  }
+```
+
+##### 2. 路由
+
+```php
+
+Route::get("photo",[\App\Http\Controllers\PhotoController::class,"getMyPhotos"]);
+```
+
+
+#### b. Upload Photo
+
+##### 1. 上传方法
+
+```php
+
+  function uploadPhoto(Request $req){
+      $data = $req->only("image","size_id");
+      /*
+      mimes 规则用于验证上传文件的 MIME 类型。在这个函数中，mimes:jpg,png,jpeg 表示只允许上传 JPEG、PNG 和 JPG 类型的图像文件。如果上传的文件不是这些类型之一，验证器将会返回验证失败的响应。这个规则可以确保上传的文件类型符合您的要求，从而避免不必要的错误和安全问题。
+      */
+      $val = Validator::make($data,[
+          "image"=>"required|image|mimes:jpg,png,jpeg",
+          "size_id"=>"required"
+      ]);
+
+      if($val->fails()){
+          return $this->dataUnprocessedResponse();
+      }
+
+      $size = Size::find($req->size_id);
+      if(!$size) return $this->notFoundResponse();
+      /*
+      这一步是先把图片存在 storage的app里面
+      然后在拼接/public/storage 用url函数返回一个连接
+      */
+      $url = url('/public/storage/'.$req->file("image")->storePublicly('/'));
+
+      $photo = Photo::create([
+          "original_url"=>$url,
+          "status"=>"uploaded",
+          "size_id"=>$req->size_id,
+          "user_id"=>Auth::user()->id,
+      ]);
+
+      return $this->successResponse([
+          "original_url"=>$photo->original_url,
+          "edited_url"=>null,
+          "framed_url"=>null,
+          "status"=>$photo->status
+      ]);
+  }
+```
+
+如果返回的连接访问不到图片的话需要执行以下命令
+```
+
+php artisan storage:link
+```
+这样的话就会把storage映射(一个快捷方式)到public下
+这样做的目的是防止有些系统的安全策略导致访问不到图片,public这个目录下就不会出现这样的情况
+
+
+##### 2. 路由
+
+```php
+
+Route::post("photo",[\App\Http\Controllers\PhotoController::class,"uploadPhoto"]);
+```
+
+
+#### c. Delete a Photo
+
+##### 1. 删除方法
+
+``` php
+
+  function deletePhotoById($id){
+    $photo = Photo::find($id);
+    if(!$photo || $photo->status =="order"){
+        return $this->notFoundResponse();
+    }
+
+    $photo->delete();
+
+    return $this->successResponse();
+  }
+```
+
+
+##### 2. 路由
+
+```php
+
+Route::delete("photo/{photo_id}",[\App\Http\Controllers\PhotoController::class,"deletePhotoById"]);
+```
+
+
+#### d. Get Uploaded Photos From a Size
+
+##### 1. 获取方法
+
+```php
+
+  function getMyPhotoBySizeId($id){
+      $user = Auth::user();
+      
+      $photos = Photo::where("size_id",$id)->where("user_id",$user->id)->where("status","uploaded")->get(["id","edited_url","original_url","framed_url","status"]);
+      if(!count($photos)) return $this->notFoundResponse();
+
+      return $this->successResponse($photos);
+  }
+```
+
+##### 2. 路由
+
+```php
+
+Route::get("photo/size/{size_id}",[\App\Http\Controllers\PhotoController::class,"getMyPhotoBySizeId"]);
+```
+
+
+#### 4. Set Frame for Photo
+
+##### 1. 设置相框方法
+
+```php
+  // 相框id非必传
+  function setFrame($photo_id,$frame_id = null,Request $req){
+      // 验证上传的图片文件
+      $val = Validator::make($req->only("image"),[
+          "image"=>"required|image|mimes:jpg,png,jpeg"
+      ]);
+
+      // 如果验证失败，则返回错误响应
+      if($val->fails()){
+          return $this->dataUnprocessedResponse();
+      }
+      $photo = Photo::find($photo_id);
+      $frame = Frame::find($frame_id);
+
+      // 如果照片不存在或状态为“order”，则返回“未找到”响应
+      if(!$photo || $photo->status == 'order'){
+          $this->notFoundResponse();
+      }
+      // 如果未指定相框ID，则返回成功响应，不设置相框
+      if (!$frame_id){
+          return $this->successResponse(["id"=>$photo->id,"frame_url"=>null]);
+      }
+
+      // 如果照片和相框尺寸相同，则设置相框并返回成功响应
+      if ($photo->size->size === $frame->size->size){
+          $url= url('public/storage/'.$req->file("image")->storePublicly("/"));
+          $photo->update(["framed_url"=>$url,"frame_id"=>$frame->id]);
+          return $this->successResponse(["id"=>$photo->id,"frame_url"=>$url]);
+      }
+
+      // 如果照片和相框尺寸不同，则返回成功响应，不设置相框
+      return $this->successResponse(["id"=>$photo->id,"frame_url"=>null]);
+  }
+```
+
+##### 2. 路由
+
+```php
+// 相框id非必传可以在后面加上? 代表非必传
+Route::post("photo/frame/{photo_id}/{frame_id?}",[\App\Http\Controllers\PhotoController::class,"setFrame"]);
+```
+
+
+### Frame
+
+#### a. Get All Frames
+
+##### 1. 获取方法
+
+``` php
+
+  function getAllFrame(){
+      $frames = Frame::all()->map(function ($item){
+      $item->size = Size::find($item->size_id)->size;
+      $item->price /=100;
+      return $item;
+
+      });
+
+      return $this->successResponse($frames);
+  }
+```
+
+##### 2. 路由
+
+``` php
+
+ Route::get("frame",[\App\Http\Controllers\FrameController::class,"getAllFrame"]);
+```
+
+### Cart
+
+#### a. Get Cart
+
+##### 1. 获取方法
+
+```php
+
+function getCart(){
+    $user = Auth::user();
+
+    $photos = Photo::where("user_id",$user->id)->where("status","cart")->get();
+
+    foreach ($photos as $item){
+        $size = Size::find($item->size_id);
+        $item->print_price = $size->price/100;
+        $item->size = $size->size;
+        if($item->frame_id){
+            $frame = Frame::find($item->frame_id);
+            $item->frame_price = $frame->price/100;
+            $item->frame_name = $frame->name;
+        }else{
+            $item->frame_price = 0;
+            $item->frame_name = "no frame_name";
+        }
+    }
+    unset($item);
+    return $this->successResponse($photos);
+}
+```
+
+##### 2. 路由
+
+```php
+
+Route::get("cart",[\App\Http\Controllers\PhotoController::class,"getCart"]);
+```
+
+
+#### b. Add Photos to Cart
+
+##### 1. 添加方法
+
+```php
+
+function appendToCart(Request $req){
+    // 从请求数据中获取照片ID列表
+    $data =  $req->only("photo_id_list");
+    // 使用 Laravel 自带的验证器验证数据格式是否正确
+    $val = Validator::make($data,[
+        "photo_id_list"=>"required|array"
+    ]);
+    // 如果数据格式不正确，就返回一个未处理的响应
+    if($val->fails()){
+        return $this->dataUnprocessedResponse();
+    }
+
+    $photoIds = $req->photo_id_list;
+    $photos = Photo::whereIn('id',$photoIds)->where('status','uploaded')->get();
+
+    // 从数据库中查询所有上传状态的照片，并根据它们的数量和请求中的照片ID数量进行比较
+    if(count($photos) !== count($photoIds)){
+        return $this->notFoundResponse();
+    }
+    // 遍历所有找到的照片，并将它们的状态更新为 "cart"
+    $photos->each(function ($photo){
+         $photo->update(["status"=>"cart"]);
+    });
+    // 返回一个成功的响应
+    return $this->successResponse();
+}
+```
+
+
+##### 2. 路由
+
+```php
+
+Route::post("cart",[\App\Http\Controllers\PhotoController::class,"appendToCart"]);
+```
+
+
+### Order
+
+#### a. Get My Orders
+
+##### 1. 获取方法
+
+```php
+
 
 ```

@@ -38,3 +38,25 @@ $frames = Frame::all()->map(function ($item){
 ]
 ```
 
+### 1. 路由可选参数问题
+frame_id是可选参数
+```php
+
+Route::post("photo/frame/{photo_id}/{frame_id?}",[\App\Http\Controllers\PhotoController::class,"setFrame"]);
+```
+
+
+```php
+// 相框id非必传
+function setFrame($photo_id,$frame_id = null,Request $req){
+  //...
+}
+```
+但是我路由上真的不传相框id的时候
+```
+photo/frame/1
+```
+就会报缺少参数错误
+```
+ArgumentCountError: Too few arguments to function App\Http\Controllers\PhotoController::setFrame(), 2 passed in D:\workspace\XMAPP\htdocs\laravel\vendor\laravel\framework\src\Illuminate\Routing\Controller.php on line 54 and exactly 3 expected in file D:\workspace\XMAPP\htdocs\laravel\app\Http\Controllers\PhotoController.php on line 0
+```
