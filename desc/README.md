@@ -1432,6 +1432,28 @@ Route::get("photo/size/{size_id}",[\App\Http\Controllers\PhotoController::class,
 ```
 
 
+#### e. Edit Photo
+这里补充一个修改图片的方法 题目里面无要求
+不清楚如果没有修改方法,他的裁剪功能图片放到哪里
+
+##### 1. 修改方法
+```php
+
+  function editPhotoById(Request $req,$id){
+      $photo = Photo::find($id);
+      if(!$photo) return;
+      $file = url('/public/storage/'.$req->file('image')->storePublicly('/'));
+      $photo->update(["original_url"=>$file]);
+      return $this->successResponse();
+  }
+```
+
+##### 2. 路由
+```php
+
+ Route::post("editPhoto/{photo_id}",[\App\Http\Controllers\PhotoController::class,"editPhotoById"]);
+```
+
 #### 4. Set Frame for Photo
 
 ##### 1. 设置相框方法
@@ -1596,6 +1618,114 @@ Route::post("cart",[\App\Http\Controllers\PhotoController::class,"appendToCart"]
 ##### 1. 获取方法
 
 ```php
+  function createOrder(Request $req){
+      $data = $req->only("full_name","phone_number","shipping_address","card_number","name_on_card","exp_date","cvv","photo_id_list");
+
+      // 验证请求数据的有效性
+      $val = Validator::make($data,[
+          "full_name"=>"required",
+          "phone_number"=>"required",
+          "shipping_address"=>"required",
+          "card_number"=>"required",
+          "name_on_card"=>"required",
+          "exp_date"=>"required",
+          "cvv"=>"required",
+          "photo_id_list"=>"required|array"
+      ]);
+
+      if($val->fails()){
+          return $this->dataUnprocessedResponse();
+      }
+
+      // 获取请求中的照片 ID 列表，并查询出对应的照片对象
+      $photoIds = $req->photo_id_list;
+      $photos = Photo::whereIn("id",$photoIds)->where("status","cart")->get();
+      if(count($photoIds) !== count($photos)){
+          return $this->notFoundResponse();
+      }
 
 
+      // 创建订单
+      $order = Order::create([
+          "full_name"=>$req->full_name,
+          "phone_number"=>$req->phone_number,
+          "shipping_address"=>$req->shipping_address,
+          "card_number"=>$req->card_number,
+          "name_on_card"=>$req->name_on_card,
+          "exp_date"=>$req->exp_date,
+          "cvv"=>$req->cvv,
+          "total"=>count($req->photo_id_list),
+          "order_placed"=>date("Y-m-d h:m"),
+          "status"=>"Valid",
+      ]);
+
+      // 将照片与订单关联，并更新照片状态为已下单
+      foreach ($photos as $photo){
+          /*
+           * 这里可以手动赋值外键 也可以使用关联方法 两种方法都可
+           * */
+          // $photo->order_id = $order->id;
+          $photo->order()->associate($order);
+          $photo->update(["status"=>"order"]);
+      }
+
+      // 如果订单创建成功，则返回成功响应，并包含订单及其照片的详细信息
+     if($order){
+         $res = Order::with("photos")->get();
+         $data = [];
+         foreach ($res as $item){
+             if($item->id == $order->id){
+                 $item->total = 0;
+                 foreach ($item->photos as $photo){
+                     $size =  Size::find($photo->size_id);
+                     $photo->size = $size->size;
+                     $photo->print_price = $size->price/100;
+
+                     if($photo->frame_size){
+                         $frame = Frame::find($photo->frame_id);
+                         $photo->frame_name = $frame->name;
+                         $photo->frame_price = $frame->price/100;
+                     }else{
+                         $photo->frame_name = "no frame";
+                         $photo->frame_price = 0;
+                     }
+                     $item->total += $photo->frame_price +  $photo->print_price;
+                 }
+                  array_push($data,$item);
+             }
+         }
+         unset($item);
+         return $this->successResponse($data);
+     }
+  }
+```
+
+
+##### 2. 路由
+
+```php
+
+Route::post("order",[\App\Http\Controllers\OrderController::class,"createOrder"]);
+```
+
+
+#### Cancel Order
+
+##### 1. 取消方法
+```php
+
+  function cancelOrder($id){
+      $order = Order::find($id);
+      $photos = Photo::where("order_id",$id)->get();
+      if(!$order || !$photos) return $this->notFoundResponse();
+      $photos->update(["status"=>"Invalid"]);
+      return $this->successResponse();
+  }
+```
+
+##### 2. 路由
+
+```php
+
+Route::post("order/cancel/{order_id}",[\App\Http\Controllers\OrderController::class,"cancelOrder"]);
 ```
