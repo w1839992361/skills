@@ -1088,7 +1088,8 @@ UserController.php
       */
       if(Auth::guard("user_web")->attempt($data)){
           $user = Auth::guard("user_web")->user();
-          $user->update(["token"=>md5($req->email)]);
+          $user->token = md5($user->email);
+          $user->save();
           return $this->successResponse([
               "id"=>$user->id,
               "email"=>$user->email,
@@ -1716,9 +1717,9 @@ Route::post("order",[\App\Http\Controllers\OrderController::class,"createOrder"]
 
   function cancelOrder($id){
       $order = Order::find($id);
-      $photos = Photo::where("order_id",$id)->get();
-      if(!$order || !$photos) return $this->notFoundResponse();
-      $photos->update(["status"=>"Invalid"]);
+      $photo = Photo::where("order_id",$id)->get();
+      if(!$order || !$photo) return $this->notFoundResponse();
+      $photo[0]->update(["status"=>"Invalid"]);
       return $this->successResponse();
   }
 ```
