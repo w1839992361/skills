@@ -228,8 +228,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -237,8 +237,8 @@ class DatabaseSeeder extends Seeder
         ]);
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>1,
@@ -247,8 +247,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -257,7 +257,7 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/BYb4sP9MO9I123gkYLcDN4DnR3rqW6tVqk6mQIwW.jpg",
             "framed_url"=>null,
             "status"=>"uploaded",
             "frame_id"=>null,
@@ -267,8 +267,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -277,8 +277,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>1,
             "frame_id"=>2,
@@ -288,8 +288,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>2,
             "frame_id"=>2,
@@ -299,8 +299,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -309,8 +309,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>2,
             "frame_id"=>2,
@@ -322,8 +322,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>1,
             "frame_id"=>2,
@@ -336,7 +336,7 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/CI9EaS3fw9wma43xTtqPFnrvSskQhv6S9YNsxbpc.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
             "framed_url"=>null,
             "status"=>"uploaded",
             "size_id"=>1,
@@ -347,12 +347,12 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/CI9EaS3fw9wma43xTtqPFnrvSskQhv6S9YNsxbpc.png",
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
             "framed_url"=>null,
             "status"=>"cart",
             "size_id"=>1,
             "frame_id"=>1,
-            "order_id"=>1,
+            "order_id"=>3,
             "user_id"=>1
         ]);
 

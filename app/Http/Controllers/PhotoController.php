@@ -105,8 +105,10 @@ class PhotoController extends Controller
         // 如果照片和相框尺寸相同，则设置相框并返回成功响应
         if ($photo->size->size === $frame->size->size){
             $url= url('public/storage/'.$req->file("image")->storePublicly("/"));
-            $photo->update(["framed_url"=>$url,"frame_id"=>$frame->id]);
-            return $this->successResponse(["id"=>$photo->id,"frame_url"=>$url]);
+            $photo->framed_url = $url;
+            $photo->frame_id= $frame->id;
+            $photo->save();
+            return $this->successResponse(["id"=>$photo->id,"frame_url"=>$photo->framed_url]);
         }
 
         // 如果照片和相框尺寸不同，则返回成功响应，不设置相框
