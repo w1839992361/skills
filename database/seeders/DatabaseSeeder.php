@@ -29,6 +29,13 @@ class DatabaseSeeder extends Seeder
             "create_time"=>date("Y-m-d h:m")
         ]);
 
+        Admin::create([
+            "id"=>3,
+            "email"=>"admin3@eaphoto.com",
+            "full_name"=>"admin",
+            "password"=>Hash::make("admin"),
+            "create_time"=>date("Y-m-d h:m")
+        ]);
 
 
         Size::create([
@@ -234,6 +241,16 @@ class DatabaseSeeder extends Seeder
             "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
             "status"=>"uploaded",
             "frame_id"=>2,
+            "size_id"=>1,
+            "user_id"=>1
+        ]);
+
+        Photo::create([
+            "edited_url"=>null,
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "status"=>"uploaded",
+            "frame_id"=>2,
             "size_id"=>2,
             "user_id"=>1
         ]);
@@ -245,6 +262,16 @@ class DatabaseSeeder extends Seeder
             "status"=>"uploaded",
             "frame_id"=>null,
             "size_id"=>1,
+            "user_id"=>1
+        ]);
+
+        Photo::create([
+            "edited_url"=>null,
+            "original_url"=>"http://127.0.0.1/laravel/public/storage/VqSXFxX6svX0ftga8GXhp2Wj83ahAfCklNhhz8C5.jpg",
+            "framed_url"=>"http://127.0.0.1/laravel/public/storage/q7DQnDLIlBIYMFhIIW6CJZObTxoAcdROii1sFCpz.png",
+            "status"=>"uploaded",
+            "frame_id"=>2,
+            "size_id"=>2,
             "user_id"=>1
         ]);
 
@@ -341,6 +368,14 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             "email"=>"us3er@eaphoto.com",
+            "username"=>"sample_user",
+            "password"=>Hash::make("user"),
+            "cart_total"=>300,
+            "create_time"=>"2023-05-16 11:12",
+        ]);
+
+        User::create([
+            "email"=>"us4er@eaphoto.com",
             "username"=>"sample_user",
             "password"=>Hash::make("user"),
             "cart_total"=>300,

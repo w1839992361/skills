@@ -26,7 +26,8 @@ class UserController extends Controller
 
         if(Auth::guard("user_web")->attempt($data)){
             $user = Auth::guard("user_web")->user();
-            $user->update(["token"=>md5($req->email)]);
+            $user->token = md5($user->email);
+            $user->save();
             return $this->successResponse([
                 "id"=>$user->id,
                 "email"=>$user->email,
@@ -93,7 +94,8 @@ class UserController extends Controller
             "repeat_password"=>"required|same:new_password",
         ]);
         // Hash check 检查原密码是否正确 题目无要求 只是做一下拓展这样更加合理
-        if($val->fails() || !Hash::check($req->original_password, $user->password)){
+//        if($val->fails() || !Hash::check($req->original_password, $user->password)){
+        if($val->fails()){
             return $this->dataUnprocessedResponse();
         }
         $user->update(["password"=>Hash::make($req->new_password)]);

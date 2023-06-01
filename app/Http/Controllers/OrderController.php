@@ -176,9 +176,9 @@ class OrderController extends Controller
     // 客户端取消
     function cancelOrder($id){
         $order = Order::find($id);
-        $photos = Photo::where("order_id",$id)->get();
-        if(!$order || !$photos) return $this->notFoundResponse();
-        $photos->update(["status"=>"Invalid"]);
+        $photo = Photo::where("order_id",$id)->get();
+        if(!$order || !$photo) return $this->notFoundResponse();
+        $photo[0]->update(["status"=>"Invalid"]);
         return $this->successResponse();
     }
 
