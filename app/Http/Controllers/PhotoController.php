@@ -24,8 +24,7 @@ class PhotoController extends Controller
         $photo = Photo::find($id);
         if(!$photo) return;
         $file = url('/public/storage/'.$req->file('image')->storePublicly('/'));
-        $photo->original_url = $file;
-        $photo->save();
+        $photo->update(["original_url"=>$file]);
         return $this->successResponse();
     }
 
