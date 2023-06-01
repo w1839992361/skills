@@ -38,7 +38,7 @@ $frames = Frame::all()->map(function ($item){
 ]
 ```
 
-### 1. 路由可选参数问题
+### 2. 路由可选参数问题
 frame_id是可选参数
 ```php
 
