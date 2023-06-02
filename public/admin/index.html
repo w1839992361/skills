@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="./assets/js/axios.js"></script>
+    <script src="./assets/js/vue.2.6.12.min.js"></script>
+    <script src="./assets/js/app.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <template v-if="componentName == 'login'">
+        <div class="flex-box-center login-box ">
+            <div class="login-card card col-md-2 col-sm-4 no-bdr px-5">
+                <div class="pb-4 mb-4 border-bottom text-center">
+                    <img src="assets/imgs/logo.svg" style="width: 80px;" class="col-10">
+                </div>
+                <form class="form-signin">
+                    <h4 class="h4 mb-4 font-weight-normal">Please sign in</h4>
+
+                    <input type="email" id="inputEmail" name="email" class="form-control no-bdr" v-model="loginForm.email" placeholder="Email" autofocus>
+                    <input type="password" id="inputPassword" name="password" class="form-control no-bdr" v-model="loginForm.password" placeholder="Password">
+
+                    <button class="btn btn-warning btn-block no-bdr mt-4" id="login" @click.prevent="login">Login</button>
+                </form>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <nav class="navbar fixed-top flex-md-nowrap p-0">
+            <a class="navbar-brand layout-left mr-0 text-warning font-italic" href="index.html">
+                <img src="assets/imgs/logo.svg" alt="logo" height="36px">
+                Photo Store
+            </a>
+            <ul class="navbar-nav px-4 flex-row">
+                <li class="nav-item text-nowrap mr-3">
+                    <div class="navbar-text">{{loginUser}}</div>
+                </li>
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" id="logout" href="login.html" @click.prevent="logout">Logout</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="container-fluid">
+            <div class="d-flex">
+                <!--Left Navbar Area-->
+                <nav class="layout-left sidebar">
+                    <div class="sidebar-sticky">
+                        <ul class="nav flex-column">
+                            <li class="nav-item" :class="[componentName == item  ? 'nav-active' :'']" v-for="(item,index) in leftTabs" :key="index"><a class="nav-link" @click="changeComponent(index)">{{item}}</a></li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!--Right Content Area-->
+                <main role="main" class="layout-right container-fluid">
+                    <template v-if="componentName == 'Dashboard'">
+                        <div class="row">
+                            <div class="col-md-3"  v-for="(item,index) in leftTabs" :key="index">
+                                <div class="card mb-4 main-card no-bdr">
+                                    <a class="text-left">
+                                        <div class="card-body">
+                                            <h5 class="main-card-title d-flex align-items-center">
+                                                <span class="event-title">{{item}}</span>
+                                            </h5>
+                                        </div>
+                                        <div class="main-card-footer">
+                                            <p class="card-text"  @click="changeComponent(index)">GO NOW!</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class=" mb-3 pt-3">
+                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+                                <h1 class="h2">{{componentName}}</h1>
+                                <div class="btn-toolbar mb-2 mb-md-0" v-if="componentName.includes('Admin')">
+                                    <div class="btn-group mr-2">
+                                        <a href="admin-create.html" class="btn btn-sm btn-outline-primary no-bdr" @click.prevent="openModal('#create_admin')">Create new admin account</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <my-table :table="tableData" :options="componentName" v-if="tableData.length>0" />
+                    </template>
+                </main>
+            </div>
+        </div>
+    </template>
+
+<!--    重置密码-->
+    <div class="modal" id="reset_password">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Password Reset Success!</h5>
+                    <button type="button" class="close" onclick="closeModal('#reset_password')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>The new password is : {{newUserForm.password}}</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('#reset_password')">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    确认框-->
+    <div class="modal" id="confirm">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button" class="close" onclick="closeModal('#confirm')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>It's an irreversible operation.</div>
+                    <div>Are you sure? </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('#confirm')">Close</button>
+                    <button type="button" class="btn btn-danger btn-sm" @click="confirmFunc()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    相框编辑-->
+    <div class="modal" id="frame_edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"  >Frame Edit</h5>
+                    <button type="button" class="close" onclick="closeModal('#frame_edit')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="input-name2">Frame Name</label>
+                            <input type="text" class="form-control no-bdr " id="input-name2" name="frame_name"
+                                   placeholder="" value="" v-model="frameForm.frame_name"/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="input-price1">Price</label>
+                            <input type="number" class="form-control no-bdr" id="input-price1" name="price"
+                                   placeholder="" value="" v-model="frameForm.price"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('#frame_edit')">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm" @click="saveFrame">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    订单详情-->
+    <div class="modal" id="details">
+        <div class="modal-dialog mw-100" style="width: 750px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Order Details</h5>
+                    <button type="button" class="close" onclick="closeModal('#details')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow: auto;">
+
+                    <table class="table border mb-0 align-middle">
+                        <colgroup>
+                            <col width="100px">
+                            <col>
+                            <col>
+                            <col width="100px">
+                            <col width="110px">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Frame Name</th>
+                            <th>Size</th>
+                            <th class="text-right">Print Price</th>
+                            <th class="text-right">Frame Price</th>
+                        </tr>
+                        </thead>
+                        <tbody >
+                        <tr v-for="item in orderDetails">
+                            <td>
+                                <div class="photo-thumbnail img-thumbnail">
+                                    <img :src="item.original_url" alt="1"/>
+                                </div>
+                            </td>
+                            <td>{{item.frame_name}}</td>
+                            <td>{{item.size}}</td>
+                            <td class="text-right">{{'$'+item.print_price.toFixed(2)}}</td>
+                            <td class="text-right">{{'$'+item.frame_price.toFixed(2)}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('#details')">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    尺寸编辑-->
+    <div class="modal" id="size_edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"  >Size Edit</h5>
+                    <button type="button" class="close" onclick="closeModal('#size_edit')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="input-price">Price</label>
+                            <input type="number" class="form-control no-bdr" id="input-price" name="price"
+                                   placeholder="" v-model="sizeForm.price"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('#size_edit')">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm" @click="saveSize">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--    尺寸编辑-->
+    <div class="modal" id="create_admin">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"  >Create Admin</h5>
+                    <button type="button" class="close" onclick="closeModal('#size_edit')">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate="" action="admin-management.html">
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="input-name">Full Name</label>
+                                <input type="text" class="form-control no-bdr " id="input-name" name="full_name" v-model="adminForm.full_name" placeholder="" value="">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="input-email">Email</label>
+                                <input type="email" class="form-control no-bdr " id="input-email" name="email" v-model="adminForm.email"  placeholder="" value="">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="input-password">Password</label>
+                                <input type="password" class="form-control no-bdr " id="input-password" name="password" v-model="adminForm.password" placeholder="" value="">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="input-repeat-password">Repeat Password</label>
+                                <input type="password" class="form-control no-bdr " id="input-repeat-password" name="repeat_password" v-model="adminForm.repeat_password" placeholder="" value="">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="admin-management.html" class="btn btn-link" @click.prevent="closeModal('#create_admin')">Cancel</a>
+                    <button class="btn btn-primary no-bdr" @click="createAdmin" >Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+   const request  = axios.create({
+        baseURL:"http://127.0.0.1/ws02_ServerSide/api/v1"
+    })
+
+    request.interceptors.request.use(config=>{
+        config.url += "?token="+window.localStorage.getItem("token") ?? "";
+        return config;
+    })
+
+    request.interceptors.response.use(res=>{
+        const status = res.status;
+        if(status == 401){
+            localStorage.clear();
+            alert("401...")
+        }
+        return res.data;
+    })
+    Vue.component("my-table",{
+        template:`
+              <table class='table border mb-0 align-middle'>
+              <thead>
+              <tr class=''>
+                <th v-for='item in columns'>{{item}}</th>
+                <th>Operation</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for='(row,index) in rows'>
+                <td v-for='column in columns'>{{ column=='price'||column=='cart_total' || column == 'total'? '$'+row[column].toFixed(2) :row[column] }}</td>
+                <td>
+                <template v-if="options == 'Size Management'">
+                  <button class='btn btn-primary btn-sm no-bdr mr-2' @click='openModal("#size_edit");app.sizeForm.price = +row.price;app.sizeForm.id=row.id'>Edit</button>
+<!--                  <button class='btn btn-warning btn-sm no-bdr mr-2' onclick='openModal()'>Reset Password</button>-->
+<!--                  <button class='btn btn-danger btn-sm no-bdr' onclick='openModal()'>Delete</button>-->
+                </template>
+                  <template v-else-if="options == 'Frame Management'">
+                    <button class='btn btn-primary btn-sm no-bdr mr-2' @click='openModal("#frame_edit");app.frameForm.price = +row.price;app.frameForm.id=row.id;app.frameForm.frame_name=row.name;'>Edit</button>
+                  </template>
+                  <template v-else-if="options == 'Order Management'">
+                    <button class="btn btn-primary btn-sm no-bdr mr-2" @click="app.orderForm = app.tableData[index];app.printOrder();">Print</button>
+                    <button class="btn btn-info btn-sm no-bdr mr-2" @click="app.orderDetails = app.tableData[index].photos;openModal('#details');">Details</button>
+                    <button class="btn btn-danger btn-sm no-bdr" @click="app.orderForm = app.tableData[index];app.cancelOrder()">Cancel</button>
+                  </template>
+                  <template v-else-if="options == 'User Management'">
+                    <button class="btn btn-warning btn-sm no-bdr mr-2" @click="app.userForm = row;app.resetUserPassword()">Reset Password</button>
+                    <button class="btn btn-danger btn-sm no-bdr" @click="openModal('#confirm');app.deleteForm = row;app.confirmFunc = app.deleteHandle">Delete</button>
+                  </template>
+                  <template v-else-if="options == 'Cart Management'">
+                    <button class="btn btn-danger btn-sm no-bdr" @click="openModal('#confirm');app.resetCartForm = row;app.confirmFunc = app.resetCartHandle">Reset Cart</button>
+                  </template>
+                  <template v-else-if="options == 'Admin Management'">
+                    <button class="btn btn-warning btn-sm no-bdr mr-2" @click="app.userForm = row;app.resetAdminPassword()">Reset Password</button>
+                    <button class="btn btn-danger btn-sm no-bdr" @click="openModal('#confirm');app.deleteForm = row;app.confirmFunc = app.deleteAdminHandle">Delete</button>
+                  </template>
+                </td>
+              </tr>
+              </tbody>
+              </table>
+            `,
+        data:{
+            msg:"1",
+        },
+        computed:{
+            columns(){
+                let data = JSON.parse(JSON.stringify(this.table));
+                delete data[0].photos;
+                return Object.keys(data[0]);
+            },
+            rows(){
+                return this.table;
+            }
+        },
+        props:{
+            table:{
+                type:Array,
+                required:true
+            },
+            options:{
+                type:String,
+                required: true
+            }
+        }
+    })
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            loginForm:{email:"admin@eaphoto.com",password:"admin"},
+
+            componentName:"Dashboard",
+            leftTabs:["Dashboard","Size Management","Frame Management","Order Management","Cart Management","Admin Management","User Management"],
+
+            loginUser:"",
+
+            tableData:[],
+
+            sizeForm:{
+                price:"",
+                id:""
+            },
+
+            frameForm:{
+                price:null,
+                frame_name:"",
+                id:""
+            },
+
+            orderForm:{},
+            orderDetails:{},
+
+            userForm:{},
+            newUserForm:{},
+
+            deleteForm:{},
+
+            resetCartForm:{},
+
+            confirmFunc:null,
+
+            adminForm:{
+                email:"",
+                full_name:"",
+                password:"",
+                repeat_password:""
+            },
+        },
+        created(){
+            this.init();
+            // this.check();
+        },
+        methods:{
+            createAdmin(){
+                request({
+                    url:"/admin/admin",
+                    method:"post",
+                    data:this.adminForm
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        closeModal("#create_admin");
+                        this.getAllAdmin();
+                        Object.assign(this.adminForm,{
+                            email:"",
+                            full_name:"",
+                            password:"",
+                            repeat_password:""
+                        },)
+                    }
+                })
+            },
+            check(){
+                request({
+                    url:"/admin/size",
+                    method: "get",
+                }).then(res=>{
+                    console.log(res)
+                }).catch(e=>{
+                    if(e.toString().indexOf("401") >-1){
+                        this.logout();
+                    }
+                })
+            },
+            init(){
+                if(!localStorage.getItem('token')){
+                    this.componentName = 'login'
+                }else{
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const componentName = urlParams.get('name') || 'Dashboard';
+                    const loginUser = JSON.parse(localStorage.getItem('user')).email;
+                    this.componentName = componentName;
+                    this.loginUser = loginUser;
+                    this.getData();
+                }
+            },
+            changeComponent(i){
+                const newUrl = new URL(location.href);
+                newUrl.searchParams.set("name",this.leftTabs[i]);
+                history.pushState({},'',newUrl);
+                this.componentName = this.leftTabs[i];
+                this.tableData = [];
+                this.getData();
+                // this.check();
+            },
+            login(){
+                request({
+                    url:"/admin/login",
+                    method: "post",
+                    data:this.loginForm
+                }).then(res=>{
+                    if(res.msg =='success'){
+                        localStorage.setItem("token",res.data.token);
+                        localStorage.setItem("user",JSON.stringify(res.data));
+                        this.changeComponent(0)
+                        this.init();
+                    }
+                })
+            },
+            getData(){
+                if(this.componentName.includes("Size")){
+                    this.getAllSize();
+                }else if(this.componentName.includes("Frame")){
+                    this.getAllFrame();
+                }else if(this.componentName.includes("Order")){
+                    this.getAllOrders();
+                }else if(this.componentName.includes("User")){
+                    this.getAllUser();
+                }else if(this.componentName.includes("Cart")){
+                    this.getAllCart();
+                }else if(this.componentName.includes("Admin")){
+                    this.getAllAdmin();
+                }
+            },
+            logout(){
+                localStorage.clear();
+                this.init();
+            },
+            getAllSize(){
+                request({
+                    url:"/admin/size",
+                    method: "get",
+                }).then(res=>{
+                    this.tableData = res.data;
+                })
+            },
+            getAllFrame(){
+                request({
+                    url:"/admin/frame",
+                    method: "get",
+                }).then(res=>{
+                    this.tableData = res.data;
+                })
+            },
+            saveSize(){
+                request({
+                    url:`/admin/size/`+this.sizeForm.id,
+                    method:"patch",
+                    data:this.sizeForm
+                }).then(res=>{
+                    if(res.msg=='success'){
+                        closeModal('#size_edit');
+                        this.getAllSize()
+                    }
+                })
+            },
+            saveFrame(){
+                request({
+                    url:`/admin/frame/`+this.frameForm.id,
+                    method:"patch",
+                    data:this.frameForm
+                }).then(res=>{
+                    if(res.msg=='success'){
+                        closeModal('#frame_edit')
+                        this.getAllFrame()
+                    }
+                })
+            },
+            getAllOrders(){
+                request({
+                    url:'/admin/order',
+                    method:"get",
+                }).then(res=>{
+                    this.tableData = res.data;
+                })
+            },
+            printOrder(){
+                request({
+                    url:'/admin/order/complete/'+this.orderForm.id,
+                    method:"post",
+                }).then(res=>{
+                    this.getAllOrders()
+                })
+            },
+            cancelOrder(){
+                request({
+                    url:'/admin/order/cancel/'+this.orderForm.id,
+                    method:"post",
+                }).then(res=>{
+                    this.getAllOrders()
+                })
+            },
+            resetCartHandle(){
+                request({
+                    url:'/admin/cart/reset/'+this.resetCartForm.id,
+                    method:"post",
+                }).then(res=>{
+                    closeModal('#confirm');
+                    this.getAllCart()
+                })
+            },
+            getAllUser(){
+                request({
+                    url:'/admin/user',
+                    method:"get",
+                }).then(res=>{
+                    this.tableData = res.data.map(item=>{
+                        delete item.token
+                        delete item.cart_total;
+                        return item;
+                    });
+                })
+            },
+            resetUserPassword(){
+                request({
+                    url:'/admin/user/reset/'+this.userForm.id,
+                    method:"post",
+                }).then(res=>{
+                    this.newUserForm = res.data;
+                    openModal('#reset_password')
+                })
+            },
+            resetAdminPassword(){
+                request({
+                    url:'/admin/admin/reset/'+this.userForm.id,
+                    method:"post",
+                }).then(res=>{
+                    this.newUserForm = res.data;
+                    openModal('#reset_password')
+                })
+            },
+            deleteHandle(){
+                request({
+                    url:'/admin/user/'+this.deleteForm.id,
+                    method:"delete",
+                }).then(res=>{
+                    closeModal('#confirm');
+                    this.getAllUser();
+                })
+            },
+            deleteAdminHandle(){
+                request({
+                    url:'/admin/admin/'+this.deleteForm.id,
+                    method:"delete",
+                }).then(res=>{
+                    closeModal('#confirm');
+                    this.getAllAdmin();
+                })
+            },
+            getAllCart(){
+                request({
+                    url:'/admin/getCart',
+                    method:"get",
+                }).then(res=>{
+                    this.tableData = res.data?.map(item=>{
+                        // delete item.username;
+                        delete item.token;
+                        delete item.create_time;
+                        return item;
+                    }) || [];
+                })
+            },
+            getAllAdmin(){
+                request({
+                    url:'/admin/admin',
+                    method:"get",
+                }).then(res=>{
+                    this.tableData = res.data
+                })
+            }
+        }
+    })
+   document.querySelectorAll(".collapse-menu").forEach((item) => {
+       item.style.height = window.getComputedStyle(item).getPropertyValue("height");
+   });
+
+   window.addEventListener("click", (e) => {
+       if (e.target.classList.contains("sidebar-heading")) {
+           let target_element = document.querySelector(e.target.getAttribute("data-target"));
+           target_element.classList.toggle("collapse-true");
+           e.target.classList.toggle("collapse-true-menu-title");
+       }
+   });
+
+
+   function openModal(id) {
+       const modal = document.querySelector(id);
+       modal.style.display = "block";
+   }
+
+   function closeModal(id) {
+       const modal = document.querySelector(id);
+       modal.style.display = "none";
+   }
+
+</script>
+</body>
+</html>

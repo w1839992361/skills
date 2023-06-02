@@ -14,5 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+//    return view('welcome');
+    return redirect("/public/index.html");
+});
+
+
+Route::get('/admin', function () {
+    return redirect("/public/admin/index.html");
 });

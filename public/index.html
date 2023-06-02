@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="./admin/assets/js/axios.js"></script>
+    <script src="./admin/assets/js/vue.2.6.12.min.js"></script>
+<!--    <script src="./assets/js/app.js"></script>-->
+</head>
+<body>
+<div id="app" :class="[componentName == 'index' ? 'index-page' :'']">
+    <header>
+        <div class="inner d-flex main-axis-space-between cross-axis-center">
+            <div class="header-left ">
+                <a href="#" class="logo d-flex cross-axis-center">
+                    <svg height="40px" fill="#343434" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.46 28.46"><g id="layer_2" data-name="layer 2"><g id="layer_1-2" data-name="layer 1"><rect x="0.5" y="0.5" width="27.46" height="27.46" rx="12" style="fill:none;stroke:#343434;stroke-miterlimit:10"/><rect x="2.23" y="2.23" width="24" height="24" rx="12" style="fill:none;stroke:#343434;stroke-miterlimit:10"/><path d="M8.54,17c0,.25.16.35.4.35h3.94a.42.42,0,0,1,.44.47.44.44,0,0,1-.44.49H8.63c-.79,0-1.13-.35-1.13-1.18V10.92c0-.84.34-1.18,1.13-1.18h4.15a.42.42,0,0,1,.44.47.43.43,0,0,1-.44.48H8.91c-.26,0-.37.12-.37.39v2.27h3.75a.43.43,0,0,1,.43.48.43.43,0,0,1-.43.46H8.54Z"/><path d="M15.08,18.06a.43.43,0,0,1-.43.31l-.22,0a.49.49,0,0,1-.38-.45.63.63,0,0,1,0-.19l3-7.51a.75.75,0,0,1,.76-.52.76.76,0,0,1,.78.52l3,7.53a.43.43,0,0,1,0,.19.49.49,0,0,1-.4.44.63.63,0,0,1-.19,0,.47.47,0,0,1-.46-.31l-.86-2.27H15.93Zm4.33-3.19-1.23-3.2c-.12-.32-.24-.67-.34-1a9.94,9.94,0,0,1-.34,1l-1.24,3.19Z"/></g></g></svg>
+                    <div class="ml-10 ">Photo Store</div>
+                </a>
+            </div>
+
+            <nav class="header-right d-flex">
+                <a href="photo-upload.html" class="nav-item" @click.prevent="componentName = 'Upload'" v-if="isLogin == 1">Photo Upload</a>
+                <a href="orders.html" class="nav-item" @click.prevent="componentName = 'Orders'" v-if="isLogin == 1">Orders</a>
+                <a href="cart.html" class="nav-item" @click.prevent="componentName ='Cart'" v-if="isLogin == 1">Cart</a>
+                <a href="user-center.html" class="nav-item" @click.prevent="componentName = 'User'" v-if="isLogin == 1">User Center</a>
+                <a class="nav-item" href="login.html" @click.prevent="componentName = 'login'" v-if="isLogin == 0">Login</a>
+                <a class="nav-item" href="register.html" @click.prevent="loginOutHandle" v-if="isLogin == 1">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <tempalte v-if="componentName == 'login'">
+        <div class="inner layout-container" key="1818">
+            <main class="main-content">
+                <form action="" class="auth-form" ref="loginForm">
+                    <div class="auth-title">Login</div>
+                    <div class="form-combination ">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" v-model="loginForm.email" class="form-element">
+                    </div>
+                    <div class="form-combination mt-30">
+                        <label for="password">Password</label>
+                        <input type="password" id="password"  v-model="loginForm.password" name="password" class="form-element">
+                    </div>
+
+                    <button class="btn btn-blue mt-40 auth-btn" @click.prevent="loginHandle">Login</button>
+                    <div class="text-right auth-tip">
+                        <a href="register.html" @click.prevent="componentName = 'create'">create an account</a>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </tempalte>
+
+    <tempalte v-if="componentName == 'create'">
+        <div class="inner layout-container" key="2828">
+            <main class="main-content">
+                <form action="" class="auth-form" ref="regForm">
+                    <div class="auth-title">Register</div>
+                    <div class="form-combination ">
+                        <label for="email1">Email</label>
+                        <input type="email" id="email1" name="email" v-model="regForm.email" class="form-element">
+                    </div>
+                    <div class="form-combination mt-30">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username"  v-model="regForm.username" class="form-element">
+                    </div>
+                    <div class="form-combination mt-30">
+                        <label for="password1">Password</label>
+                        <input type="password" id="password1" name="password"  v-model="regForm.password" class="form-element">
+                    </div>
+                    <div class="form-combination mt-30">
+                        <label for="repeat-password">Repeat Password</label>
+                        <input type="password" id="repeat-password" name="repeat_password"  v-model="regForm.repeat_password"  class="form-element">
+                    </div>
+
+                    <button class="btn btn-blue mt-40 auth-btn" @click.prevent="regHandle">Register</button>
+                    <div class="text-right auth-tip">
+                        <a href="login.html" @click.prevent="componentName='login'">I have an account</a>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </tempalte>
+
+    <template v-if="componentName == 'index'">
+        <div class="index-inner d-flex flex-col cross-axis-center">
+            <img class="" src="imgs/title-2x.png" width="500px" alt="">
+            <button class="btn btn-lg mt-60"  @click.prevent="componentName ='selectSize'">GET IT NOW</button>
+        </div>
+    </template>
+
+    <template v-if="componentName == 'selectSize'">
+        <div class="inner layout-container" key="3838">
+
+            <main class="main-content">
+                <h1 class="main-title">Select Your Photo Size</h1>
+                <div class="size-list mt-40" >
+                    <div class="size-item" v-for="(item,index) in sizeList" @click="sizeActiveIndex=index">
+                        <span class="size-item-val">{{item.size.split(" ")[0]}}</span>
+                        <span class="size-item-unit">Inch</span>
+                    </div>
+
+                </div>
+
+                <div class="size-preview-container d-flex main-axis-center cross-axis-center mt-30">
+                    <div class="size-preview-item" :class="[sizeActiveIndex == index ? 'spv-active':'',sizeArr[sizeActiveIndex]]"  v-for="(item,index) in sizeList">
+                        <div class="spv-width">{{item.width}}cm</div>
+                        <div class="spv-height">{{item.height}}cm</div>
+                        <div class="spv-size">{{item.size}}</div>
+                        <div class="spv-oth">
+                            <div class="spv-price">${{item.price.toFixed(2)}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-btn-list d-flex main-axis-space-between">
+                    <button class="btn btn-sm" disabled>Prev</button>
+                    <button class="btn btn-sm btn-blue" @click="componentName ='Upload';setSize()">Next</button>
+                </div>
+            </main>
+        </div>
+    </template>
+
+    <template v-if="componentName == 'Upload'">
+        <div class="inner layout-container" key="4848">
+
+            <main class="main-content">
+                <h1 class="main-title">Upload Your Photo File -{{getSelectSize()}}</h1>
+
+                <div class="upload-photo-list mt-40">
+                    <label class="upload-tool">
+                        <input type="file" multiple style="position: absolute;width: 0px;height: 0px;" @change="uploadPhoto">
+                        <svg viewBox="0 0 1024 1024" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg" p-id="2739">
+                            <path d="M896 917.333333H128c-12.8 0-21.333333-8.533333-21.333333-21.333333V512c0-12.8 8.533333-21.333333 21.333333-21.333333s21.333333 8.533333 21.333333 21.333333v362.666667h725.333334V512c0-12.8 8.533333-21.333333 21.333333-21.333333s21.333333 8.533333 21.333333 21.333333v384c0 12.8-8.533333 21.333333-21.333333 21.333333zM704 341.333333c-6.4 0-10.666667-2.133333-14.933333-6.4L512 157.866667l-177.066667 177.066666c-8.533333 8.533333-21.333333 8.533333-29.866666 0s-8.533333-21.333333 0-29.866666l192-192c8.533333-8.533333 21.333333-8.533333 29.866666 0l192 192c8.533333 8.533333 8.533333 21.333333 0 29.866666-4.266667 4.266667-8.533333 6.4-14.933333 6.4z"
+                                  p-id="2740"></path>
+                            <path d="M512 704c-12.8 0-21.333333-8.533333-21.333333-21.333333V128c0-12.8 8.533333-21.333333 21.333333-21.333333s21.333333 8.533333 21.333333 21.333333v554.666667c0 12.8-8.533333 21.333333-21.333333 21.333333z"
+                                  p-id="2741">
+                            </path>
+                        </svg>
+                    </label>
+
+                    <div class="upload-photo-item" :style="{border:selectPhoto.includes(item)?'5px solid #3b82f6':''}" v-for="item in photoList" @click="selectPhotoPushHandle(item)">
+                        <div class="upi-mask">
+
+                            <button class="upi-btn" @click.stop="editPhotoHandle(item)">
+                                <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M0 298.666667h128v-85.333334H0v85.333334z m725.333333 725.333333V298.666667H384v-85.333334h426.666667v810.666667h-85.333334z m298.666667-298.666667v85.333334h-128v-85.333334h128zM298.666667 0v725.333333h341.333333v85.333334H213.333333V0h85.333334z"></path></svg>
+                            </button>
+                            <button class="upi-btn" @click.stop="setFrameHandle(item)">
+                                <svg viewBox="0 0 1252 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M995.555556 256m-85.333333 0a1.5 1.5 0 1 0 170.666667 0 1.5 1.5 0 1 0-170.666667 0Z" p-id="11777"></path><path d="M1243.591111 1024C1247.971556 1024 1251.555556 1020.302222 1251.555556 1015.751111L1251.555556 8.248889C1251.555556 3.697778 1247.971556 0 1243.591111 0L8.021333 0C3.584 0 0 3.697778 0 8.248889l0 1007.502222C0 1020.302222 3.584 1024 8.021333 1024L1243.591111 1024zM56.888889 56.888889l1137.777778 0 0 910.222222L56.888889 967.111111 56.888889 56.888889z" p-id="11778"></path><path d="M848.156444 441.742222c-4.892444-7.68-14.734222-9.500444-22.072889-4.323556l-157.184 110.535111c-3.640889 2.56-8.590222 1.536-10.865778-2.389333L472.803556 225.621333C468.366222 217.884444 461.255111 217.827556 457.102222 225.792l-18.318222 35.271111L113.664 888.035556c-4.152889 8.021333-0.341333 14.449778 8.476444 14.449778l1004.430222 0c8.533333 0 12.003556-6.144 7.168-13.710222L848.156444 441.742222z" p-id="11779"></path></svg>
+                            </button>
+                            <button class="upi-btn" @click.stop="deletePhotoById(item.id)">
+                                <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" ><path d="M938.666667 128h-42.666667v874.666667a21.333333 21.333333 0 0 1-21.333333 21.333333H149.333333a21.333333 21.333333 0 0 1-21.333333-21.333333V128H85.333333a21.333333 21.333333 0 0 1 0-42.666667h853.333334a21.333333 21.333333 0 0 1 0 42.666667z m-85.333334 0H170.666667v853.333333h682.666666V128z m-533.333333 85.333333a21.333333 21.333333 0 0 1 21.333333 21.333334v640a21.333333 21.333333 0 0 1-42.666666 0V234.666667a21.333333 21.333333 0 0 1 21.333333-21.333334z m192 0a21.333333 21.333333 0 0 1 21.333333 21.333334v640a21.333333 21.333333 0 0 1-42.666666 0V234.666667a21.333333 21.333333 0 0 1 21.333333-21.333334z m192 0a21.333333 21.333333 0 0 1 21.333333 21.333334v640a21.333333 21.333333 0 0 1-42.666666 0V234.666667a21.333333 21.333333 0 0 1 21.333333-21.333334z m0-170.666666H320a21.333333 21.333333 0 0 1 0-42.666667h384a21.333333 21.333333 0 0 1 0 42.666667z" ></path></svg>
+                            </button>
+                        </div>
+
+                        <img :src="item.original_url" alt="Image">
+                    </div>
+                </div>
+
+                <div class="mt-40 function-btn-list d-flex main-axis-space-between">
+                    <button class="btn btn-sm btn-red" @click="componentName = 'selectSize'">Change Size</button>
+                    <div>
+                        <button class="btn btn-sm btn-blue" @click="addCart">Add to Cart</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'editPhoto'">
+        <div class="inner layout-container" key="5858">
+
+            <main class="main-content">
+                <h1 class="main-title process-title d-flex main-axis-space-between">
+                    <div>Process Your Photo</div>
+                </h1>
+
+                <div class="photo-process-area d-flex main-axis-center cross-axis-center mt-40">
+                    <div class="photo-container" style="position: relative">
+                       <canvas width="1000" height="500" ref="editCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="mt-40 function-btn-list d-flex main-axis-space-between">
+                    <button class="btn btn-sm btn-red" @click="componentName = 'Upload'">Cancel</button>
+                    <div>
+                        <button class="btn btn-sm btn-blue" @click="editPhotoFinishHandle">Finish</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'Frame'">
+
+        <div class="inner layout-container" key="6868">
+            <div class="frame-list">
+                <div class="frame-item" v-for="item in frameList" @click="drawFrame(item)">
+                    <div class="frame-thumbnail">
+                        <img :src="item.url" alt="">
+                    </div>
+                    <div class="frame-info">
+                        <div class="frame-name">{{item.name}}</div>
+                        <div class="frame-info-inline d-flex main-axis-space-between">
+                            <div class="frame-available">{{item.size}}</div>
+                            <div class="frame-price">${{item.price.toFixed(2)}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <main class="main-content">
+                <h1 class="main-title">Choose Your Photo Frame</h1>
+
+                <div class="frame-preview-area d-flex main-axis-center cross-axis-center mt-40">
+                    <div class="frame-preview-container">
+<!--                        <img src="imgs/mockup_1.jpg" style="width: 100%;" alt="">-->
+                        <canvas width="1120px" height="600px" ref="frameCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="mt-40 function-btn-list d-flex main-axis-space-between">
+                    <button class="btn btn-sm btn-red" @click="componentName = 'Upload'">Cancel</button>
+                    <div>
+                        <button class="btn btn-sm btn-blue" @click="frameFinishHandle">Finish</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'Orders'">
+        <div class="inner layout-container" key="7878">
+            <main class="main-content">
+                <h1 class="main-title">My Orders</h1>
+                <table class="table">
+                    <colgroup>
+                        <col style="width: 100px;">
+                        <col>
+                        <col style="width: 200px;">
+                        <col style="width: 100px">
+                        <col style="width: 120px">
+                        <col style="width: 130px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="text-left">No.</th>
+                        <th class="text-left">Thumbnail</th>
+                        <th class="text-left">Order Placed</th>
+                        <th>Status</th>
+                        <th class="text-right">Total</th>
+                        <th class="text-left pl-30">Operation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in orderList">
+                        <td>{{item.id+10000000}}</td>
+                        <td>
+                            <div class="order-thumbnail-list" data-num="5">
+                                <div class="photo-thumbnail"  v-for="child in item.photos.slice(0,5)">
+                                    <img :src="child.url" alt="">
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+                            {{item.order_placed}}
+                        </td>
+                        <td class="text-center">
+                            {{item.status}}
+                        </td>
+
+                        <td class="text-right">
+                           ${{item.total.toFixed(2)}}
+                        </td>
+                        <td>
+                            <div class="table-ope">
+                                <button class="btn btn-sm btn-blue" @click="getOrderDetais(item)">View More</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+
+        <div class="modal" id="orderDetails">
+            <div class="modal-body">
+                <div class="modal-title">More Information</div>
+                <table class="table-bordered mt-30">
+                    <colgroup>
+                        <col style="width: 200px;">
+                        <col>
+                        <col style="width: 160px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <td>Full Name</td>
+                        <td>{{orderDetails.full_name}}</td>
+                        <td>Phone Number</td>
+                        <td>{{orderDetails.phone_number}}</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping Address</td>
+                        <td colspan="3">{{orderDetails.shipping_address}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-30 bg-white form-title">Order List</div>
+
+                <div class=" content-group">
+                    <div class="order-list-table-container">
+                        <table class="table" style="margin-top: -10px">
+                            <colgroup>
+                                <col style="width: 150px;">
+                                <col style="width: 200px">
+                                <col >
+                                <col style="width: 100px">
+                                <col style="width: 100px">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th class="text-left">Thumbnail</th>
+                                <th class="text-left">Frame Name</th>
+                                <th class="text-center">Size</th>
+                                <th class="text-right">Print Price</th>
+                                <th class="text-right">Frame Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="item in orderDetails.photos">
+
+                                <td>
+                                    <div class="photo-thumbnail">
+                                        <img :src="item.original_url" alt="Image">
+                                    </div>
+                                </td>
+                                <td>
+                                    {{item.frame_name}}
+                                </td>
+                                <td class="text-center">
+                                    {{item.size}}
+                                </td>
+                                <td class="text-right">${{item.print_price.toFixed(2)}}</td>
+                                <td class="text-right">${{item.frame_price.toFixed(2)}}</td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex main-axis-space-between">
+                    <div></div>
+                    <div>
+                        <button class="mt-30 btn btn-blue btn-sm" onclick="closeModal()">Hide</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'Cart'">
+        <div class="inner layout-container" key="8888">
+            <main class="main-content">
+                <h1 class="main-title">Cart</h1>
+
+                <table class="table">
+                    <colgroup>
+                        <col style="width: 30px;">
+                        <col style="width: 150px;">
+                        <col>
+                        <col>
+                        <col style="width: 160px">
+                        <col style="width: 160px">
+                        <col style="width: 100px;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th class="text-left">Thumbnail</th>
+                        <th class="text-left">Frame Name</th>
+                        <th class="text-left">Size</th>
+                        <th class="text-right">Print Price</th>
+                        <th class="text-right">Frame Price</th>
+                        <th class="text-left pl-30">Operation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in cartList">
+                        <td>
+                            <input type="checkbox" v-model="item.selected">
+                        </td>
+                        <td>
+                            <div class="photo-thumbnail">
+                                <img :src="item.url" alt="Image">
+                            </div>
+                        </td>
+                        <td>
+                            {{item.frame_name}}
+                        </td>
+                        <td>
+                            {{item.size}}
+                        </td>
+                        <td class="text-right">${{item.print_price.toFixed(2)}}</td>
+                        <td class="text-right">${{item.frame_price.toFixed(2)}}</td>
+                        <td>
+                            <div class="table-ope">
+                                <button class="btn btn-sm btn-blue" @click="openModal();cartChache = item;">Edit</button>
+                                <button class="btn btn-sm btn-red" @click="deletePhotoById(item.id,1)">Delete</button>
+                            </div>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-60"></div>
+
+                <div class="cart-footer">
+                    <div class="inner d-flex main-axis-space-between cross-axis-center">
+                        <div>
+                        </div>
+                        <div class="cart-footer-info d-flex cross-axis-center">
+                            <div class="cart-total">
+                                Total: ${{getCartTotal}}({{cartList.filter(item=>item.selected).length}} Photos)
+                            </div>
+                            <button class="cart-btn"  @click.prevent="checkOutHandle">Checkout</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="modal toast-modal edit-modal">
+            <div class="modal-body ">
+                <div>What do you want to do？</div>
+                <div>
+                    <a href="photo-processing.html"  @click.prevent="cartGotoEditPhoto">1. Process Photo</a>
+                </div>
+                <div>
+                    <a href="frame-choosing.html" @click.prevent="cartGotoChangeFrame">2. Change Frame</a>
+                </div>
+                <div>
+                    <a href="#" onclick="closeModal()">3. Cancel</a>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'Checkout'">
+
+        <div class="inner layout-container" key="9898">
+            <main class="main-content">
+                <h1 class="main-title">Checkout</h1>
+
+                <div class="mt-40 bg-white form-title">Complete Your Personal Information</div>
+                <div class="content-group d-flex person-info-form">
+                    <div class="form-combination">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" class="form-element" id="full-name" v-model="submitOrderForm.full_name" name="full_name">
+                    </div>
+                    <div class="form-combination ml-30">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" class="form-element" id="phone" v-model="submitOrderForm.phone_number" name="phone_number">
+                    </div>
+
+                    <div class="form-combination ml-30">
+                        <label for="address">Shipping address</label>
+                        <input type="text" class="form-element" id="address" v-model="submitOrderForm.shipping_address" name="shipping_address">
+                    </div>
+                </div>
+
+                <div class="mt-40 bg-white form-title">Complete Your Credit Card Information</div>
+                <div class="content-group d-flex credit-info-form">
+                    <div class="form-combination w-30">
+                        <label for="card-number">Card Number</label>
+                        <input type="text" class="form-element" id="card-number"  v-model="submitOrderForm.card_number" name="card_number">
+                    </div>
+
+                    <div class="form-combination ml-30 w-30">
+                        <label for="name-on-card">Name on Card</label>
+                        <input type="text" class="form-element" id="name-on-card"  v-model="submitOrderForm.name_on_card" name="name_on_card">
+                    </div>
+
+                    <div class="form-combination ml-30">
+                        <label for="exp-date">Expiration date</label>
+                        <input type="date" class="form-element" id="exp-date" v-model="submitOrderForm.exp_date" name="exp_date">
+                    </div>
+
+                    <div class="form-combination ml-30 w-15">
+                        <label for="cvv">CVV/CID</label>
+                        <input type="text" class="form-element" id="cvv" v-model="submitOrderForm.cvv" name="cvv">
+                    </div>
+                </div>
+
+                <div class="mt-40 bg-white form-title">Photo List</div>
+                <div class="content-group checkout-photo-list">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 150px;">
+                            <col>
+                            <col >
+                            <col style="width: 160px">
+                            <col style="width: 160px">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th class="text-left">Thumbnail</th>
+                            <th class="text-left">Frame Name</th>
+                            <th class="text-left">Size</th>
+                            <th class="text-right">Print Price</th>
+                            <th class="text-right">Frame Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in checkOutPhotoList">
+
+                            <td>
+                                <div class="photo-thumbnail">
+                                    <img :src="item.url" alt="Image">
+                                </div>
+                            </td>
+                            <td>
+                                {{item.frame_name}}
+                            </td>
+                            <td>
+                                {{item.size}}
+                            </td>
+                            <td class="text-right">${{item.print_price.toFixed(2)}}</td>
+                            <td class="text-right">${{item.frame_price.toFixed(2)}}</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="mt-60"></div>
+
+                <div class="cart-footer">
+                    <div class="inner d-flex main-axis-space-between cross-axis-center">
+                        <div>
+                            <button class="checkout-cancel-btn" @click="componentName = 'Cart'">Cancel</button>
+                        </div>
+                        <div class="cart-footer-info d-flex cross-axis-center">
+                            <div class="cart-total">
+                                Total: ${{getCheckoutTotal}}
+                            </div>
+                            <button class="checkout-submit-btn" @click="submitOrder">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </template>
+
+    <template v-if="componentName == 'User'">
+        <div class="inner layout-container" key="0808">
+            <main class="main-content">
+                <h1 class="main-title">User Center</h1>
+                <div class="mt-40">
+                    <div class="info-combination ">
+                        <div class="info-title">Username</div>
+                        <div class="info-content">{{userInfo.username}}</div>
+                    </div>
+
+                    <div class="info-combination ">
+                        <div class="info-title">Email</div>
+                        <div class="info-content">{{userInfo.email}}</div>
+                    </div>
+
+                    <div class="info-combination ">
+                        <div class="info-title">Create Time</div>
+                        <div class="info-content">{{userInfo.create_time}}</div>
+                    </div>
+
+                    <div class="info-combination ">
+                        <div class="info-title">Password</div>
+                        <div class="info-content">*****************</div>
+                    </div>
+
+                    <div class="info-combination ">
+                        <div class="info-title">Operation</div>
+                        <div class="info-content">
+                            <button class="btn btn-sm btn-green" @click="componentName = 'Orders'">My Orders</button>
+                            <button class="btn btn-sm btn-red ml-20" onclick="openModal()">Reset Password</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+        <div class="modal toast-modal">
+            <div class="modal-body">
+                <form action="" class="auth-form">
+                    <div class="auth-title">Reset Password</div>
+                    <div class="form-combination ">
+                        <label for="original-password">Original Password</label>
+                        <input type="password" id="original-password" name="original_password" v-model="resetForm.original_password" class="form-element">
+                    </div>
+
+                    <div class="form-combination mt-20">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new_password" v-model="resetForm.new_password"  class="form-element">
+                    </div>
+
+                    <div class="form-combination mt-20">
+                        <label for="repeat-password1">Repeat Password</label>
+                        <input type="password" id="repeat-password1" name="repeat_password" v-model="resetForm.repeat_password"  class="form-element">
+                    </div>
+
+                    <button class="btn btn-blue mt-30 auth-btn" @click.prevent="resetUserPassword">Reset</button>
+                    <div class="text-right auth-tip">
+                        <a href="#" onclick="closeModal()">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+</div>
+<script>
+    const request = axios.create({
+        baseURL:"http://127.0.0.1/ws02_ServerSide/api/v1"
+    })
+
+    request.interceptors.request.use(config=>{
+        config.url = config.url + '?token='+localStorage.getItem("user_token") ?? "";
+        return config;
+    })
+
+    request.interceptors.response.use(res=>{
+       try{
+
+       }catch (e){
+           console.log(e)
+       }
+        return res.data;
+    })
+
+
+    const app = new Vue({
+        el:"#app",
+        data:{
+            componentName:"",
+
+            isLogin:0,
+            loginForm:{
+                email:"user@eaphoto.com",
+                password:"user"
+            },
+            regForm:{
+                email: "",
+                username: "",
+                password: "",
+                repeat_password: ""
+            },
+
+            sizeList:[],
+            sizeActiveIndex:0,
+            sizeArr:["one-inch","two-inch","three-inch","five-inch","six-inch","seven-inch","eight-inch"],
+
+            photoList:[],
+
+            editPhotoData:{},
+
+            editWidth:"1000",
+            editHeight:"500",
+            selectPhoto:[],
+
+            orderList:[],
+            orderDetails:{},
+
+            cartList:[],
+
+            userInfo:{},
+
+            resetForm:{
+                original_password:"",
+                new_password:"",
+                repeat_password:""
+            },
+
+            frameList:[],
+            selectFrame:{},
+
+            checkOutPhotoList:[],
+
+            submitOrderForm:{
+                full_name:"",
+                phone_number:"",
+                shipping_address:"",
+                card_number:"",
+                name_on_card:"",
+                exp_date:"",
+                cvv:"",
+                photo_id_list:[]
+            },
+
+            cartChache:{},
+            editPhotoFinishHandle:null,
+        },
+        created(){
+            this.init();
+            let _this = this;
+            window.addEventListener('popstate', function(e) {
+                _this.init();
+            });
+        },
+        watch:{
+            componentName(val){
+                if(!localStorage.getItem('user_token')){
+                    if(val !== 'login' && val!=='create') return this.componentName = 'login';
+                }else{
+                    if(val == 'Upload' && !sessionStorage.getItem("selectSize")){
+                        this.componentName = 'selectSize';
+                    }
+                    if(val !=='Frame' && this.selectFrame.id){
+                        this.selectFrame = {};
+                    }
+                    if(val !="login" && val!='create'){
+                        let newUrl = new URL(location.href);
+                        newUrl.searchParams.set("name",val);
+                        history.pushState({},'',newUrl);
+                        this.getData();
+                    }
+                }
+
+            },
+        },
+        computed:{
+            getCartTotal(){
+                let total = 0;
+                 this.cartList.map(item=>{
+                    if(item.selected) total+= (item.print_price + item.frame_price);
+                })
+                return total.toFixed(2);
+            },
+            getCheckoutTotal(){
+                let total = 0;
+                this.checkOutPhotoList.map(item=>{
+                    total+= (item.print_price + item.frame_price);
+                })
+                return total.toFixed(2);
+            },
+        },
+        methods:{
+            cartGotoChangeFrame(){
+                sessionStorage.setItem("selectSizeId",this.cartChache.size_id);
+                sessionStorage.setItem("selectSize",this.cartChache.size);
+                // sessionStorage.setItem("selectPhoto",this.cartChache.original_url);
+                this.componentName = 'Frame';
+                console.log(this.cartChache);
+                this.setFrameHandle(this.cartChache);
+            },
+            cartGotoEditPhoto(){
+                sessionStorage.setItem("selectSizeId",this.cartChache.size_id);
+                sessionStorage.setItem("selectSize",this.cartChache.size);
+                // sessionStorage.setItem("selectPhoto",this.cartChache.original_url);
+                console.log(this.cartChache);
+                this.editPhotoHandle(this.cartChache);
+            },
+
+            submitOrder(){
+                request({
+                    url:"/client/order",
+                    method:"post",
+                    data:this.submitOrderForm
+                }).then(res=>{
+                    if(res.msg=='success'){
+                        this.componentName = 'Orders'
+                    }
+                })
+            },
+
+            frameFinishHandle(){
+                let canvas  = this.$refs.frameCanvas;
+                let ctx = canvas.getContext("2d");
+                let _this = this;
+                canvas.toBlob(function (blob){
+                    let form = new FormData();
+                    form.append('image',blob);
+                    request({
+                        url:`/client/photo/frame/${sessionStorage.getItem('selectPhotoId')}/${sessionStorage.getItem('selectFrameId')}`,
+                        method:"post",
+                        data:form
+                    }).then(res=>{
+                       if(res.msg =='success'){
+                           _this.componentName = 'Upload';
+                       }
+                    })
+                })
+            },
+
+            setFrameHandle(item){
+                sessionStorage.setItem('selectPhotoId',item.id);
+                this.componentName = 'Frame';
+                this.$nextTick(async function (){
+                    let canvas  = this.$refs.frameCanvas;
+                    let ctx = canvas.getContext("2d");
+                    console.log(ctx);
+                    let img = new Image();
+                    sessionStorage.setItem('selectPhoto',item.original_url)
+                    img.src = item.original_url;
+                    img.onload = function (){
+                        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+                    }
+                   const {data} = await request({
+                        url:"/client/frame",
+                        method:"get",
+                    })
+                    if(item.framed_url){
+                        this.drawFrame(data.find(it=>it.id == item.frame_id))
+                    }
+                })
+            },
+
+            drawFrame(item){
+                let canvas  = this.$refs.frameCanvas;
+                let ctx = canvas.getContext("2d");
+                let fileData = new FormData();
+                let img = new Image();
+                if(sessionStorage.getItem("selectSize") !== item.size) return alert('size not match');
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                if(!this.selectFrame.id || this.selectFrame.id !==item.id){
+                   this.selectFrame = item;
+                    img.src = item.url;
+                    img.onload = function (){
+                        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+                        // ctx.save();
+                        let photo = new Image();
+                        photo.src = sessionStorage.getItem("selectPhoto");
+                        photo.onload = function (){
+                            // let x1 = 335, y1 = 65;
+                            // let x2 = 780, y2 = 65;
+                            // let x3 = 785, y3 = 430;
+                            // let x4 = 330, y4 = 430;
+                            //
+                            // ctx.beginPath();
+                            // ctx.moveTo(x1, y1);
+                            // ctx.lineTo(x2, y2);
+                            // ctx.lineTo(x3, y3);
+                            // ctx.lineTo(x4, y4);
+                            // ctx.closePath();
+                            //
+                            // let pattern = ctx.createPattern(photo, 'no-repeat');
+                            // ctx.fillStyle = pattern;
+                            // let scaleX = canvas.width / photo.width;
+                            // let scaleY = canvas.height / photo.height;
+                            // ctx.fillStyle = pattern;
+                            // ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+                            // ctx.fill();
+                            // ctx.fillStyle = "#FF0000";
+                            // ctx.fill();
+                            // ctx.drawImage(photo,335,65,445,363);
+                            ctx.drawImage(photo,292,158,536,285);
+                        }
+                    }
+                    sessionStorage.setItem('selectFrameId',item.id);
+                }else{
+                    this.selectFrame = {};
+                    sessionStorage.removeItem('selectFrameId');
+                    img.src = sessionStorage.getItem('selectPhoto');
+                    img.onload = function (){
+                        // ctx.restore();
+                        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+                    }
+                }
+            },
+
+            resetUserPassword(){
+                request({
+                    url:"/client/user/reset",
+                    method:"post",
+                    data:this.resetForm
+                }).then(res=>{
+                   if(res.msg =='success'){
+                       closeModal()
+                       Object.assign(this.resetForm,{
+                           original_password:"",
+                           new_password:"",
+                           repeat_password:""
+                       })
+                   }
+                })
+            },
+
+            getOrderDetais(item){
+                this.orderDetails = item;
+                openModal()
+            },
+
+            checkOutHandle(){
+                let list = this.cartList.filter(item=>item.selected);
+                if(list.length == 0) return;
+                this.componentName = 'Checkout';
+                this.checkOutPhotoList = list;
+                let ids = list.map(item=>item.id);
+                this.submitOrderForm.photo_id_list = ids;
+            },
+
+            selectPhotoPushHandle(item){
+                let index = this.selectPhoto.findIndex(it=>it.id == item.id)
+                if(index ==-1){
+                    this.selectPhoto.push(item);
+                }else{
+                    this.selectPhoto.splice(index,1);
+                }
+            },
+
+            addCart(){
+               if(this.selectPhoto.length==0) return;
+               let ids = this.selectPhoto.map(item=>item.id);
+                request({
+                    url:"/client/cart",
+                    method:"post",
+                    data:{photo_id_list:ids}
+                }).then(res=>{
+                    if(res.msg =='success'){
+                        this.getMyUpload();
+                        ids.forEach(item=>{
+                            let index = this.selectPhoto.findIndex(it=>it.id == item);
+                            this.selectPhoto.splice(index,1);
+                        })
+                        this.componentName = 'Cart';
+                    }
+                    console.log(res)
+                })
+            },
+
+
+            editPhotoHandle(item){
+                sessionStorage.setItem('selectPhotoId',item.id);
+                this.editPhotoData = item;
+                this.componentName = 'editPhoto';
+                let _this = this;
+                this.$nextTick(()=>{
+
+                    let canvas = this.$refs.editCanvas;
+                    let ctx = canvas.getContext("2d");
+                    let img = new Image();
+                    img.src=item.original_url
+
+                    let clipX = 50;
+                    let clipY = 50;
+                    let clipWidth = 100;
+                    let clipHeight = 100;
+
+                    let isDragging = false;
+                    let isResizing = false;
+
+                    canvas.addEventListener("mousedown",onMouseDown);
+                    canvas.addEventListener("mousemove",onMouseMove);
+                    canvas.addEventListener("mouseup",onMouseUp);
+
+                    img.onload = function (){
+                        if(img.width/2 < clipWidth && img.height/2 < clipHeight){
+                            console.log(img.width)
+                            clipWidth = img.width/2;
+                            clipHeight = img.height/2;
+                        }
+                        if(img.width <= canvas.width && img.height <= canvas.height){
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            console.log('dui')
+                        }else{
+                            console.log('budui')
+                            if(img.width > 1000){
+                               let radio = img.width / 1000;
+                               canvas.height = img.height / radio;
+                           }
+                           if(img.height > 500){
+                               let radio = img.height / 500;
+                               canvas.width = img.width / radio;
+
+                           }
+                        }
+                        draw()
+                    }
+
+                    function draw(){
+                        ctx.clearRect(0,0,canvas.width,canvas.height);
+                        console.log(img.width,img.height)
+                        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+                        ctx.strokeStyle = 'green';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(clipX, clipY, clipWidth, clipHeight);
+
+                        ctx.fillStyle = "white";
+                        ctx.fillRect(clipX + clipWidth - 10, clipY + clipHeight - 10, 10, 10);
+                        ctx.strokeStyle = "black";
+                        ctx.strokeRect(clipX + clipWidth - 10, clipY + clipHeight - 10, 10, 10);
+                    }
+
+                    function onMouseDown(e){
+                        if(e.offsetX >= clipX && e.offsetX <= clipX+clipWidth && e.offsetY >= clipY && e.offsetY<=clipY+clipHeight){
+                            if(e.offsetX >= clipX + clipWidth -10 && e.offsetY>= clipY+clipHeight-10){
+                                isResizing = true;
+                                console.log('re')
+                            }else{
+                                isDragging = true;
+                                console.log('dr')
+                            }
+                        }
+                    }
+
+                    function onMouseMove(e){
+                        if(isDragging){
+                            clipX = e.offsetX - clipWidth/2;
+                            clipY = e.offsetY - clipHeight/2;
+                            if(clipX<=0 || clipY<=0||clipX>=canvas.width-clipWidth|| clipY>=canvas.height-clipHeight) return;
+                            draw()
+                        }else if (isResizing){
+                            clipWidth = Math.max(e.offsetX - clipX + 10, 10);
+                            clipHeight = Math.max(e.offsetY - clipY + 10, 10);
+                            draw();
+                        }
+                    }
+
+                    function onMouseUp(event) {
+                        if (isDragging) {
+                            isDragging = false;
+                        } else if (isResizing) {
+                            isResizing = false;
+                        }
+                    }
+
+                    this.editPhotoFinishHandle = function (){
+                        let tempCanvas = document.createElement("canvas");
+                        let tempCtx = tempCanvas.getContext("2d");
+                        tempCanvas.width = clipWidth;
+                        tempCanvas.height = clipHeight;
+                        tempCtx.drawImage(img,-clipX,-clipY,canvas.width,canvas.height);
+                        tempCanvas.toBlob(function (blob){
+                            let fileData = new FormData();
+                            fileData.append("image",blob);
+                            request({
+                                url:"/client/editPhoto/"+sessionStorage.getItem('selectPhotoId'),
+                                method:"post",
+                                data:fileData
+                            }).then(res=>{
+                                if(res.msg =='success'){
+                                    _this.componentName ='Upload';
+                                }
+                            })
+                        })
+                    }
+                })
+            },
+
+            uploadPhoto(e){
+                const files = e.target.files;
+                console.log(files)
+                const fileData = new FormData();
+                fileData.append('image',files[0]);
+                fileData.append('size_id',sessionStorage.getItem('selectSizeId'));
+                request({
+                    url:"/client/photo",
+                    method:"post",
+                    data:fileData,
+                }).then(res=>{
+                   this.getMyUpload()
+                })
+            },
+
+            deletePhotoById(id,index=null){
+                request({
+                    url:"/client/photo/"+id,
+                    method:"delete",
+                }).then(res=>{
+                    if(index) return  this.getMyCart();
+                    this.getMyUpload()
+                })
+            },
+
+            getSelectSize(){
+                return sessionStorage.getItem('selectSize');
+            },
+
+            init(){
+                if(!localStorage.getItem("user_token")){
+                    this.componentName = 'login'
+                    const newUrl = window.location.href.split('?')[0];
+                    window.history.replaceState({}, '', newUrl);
+                    this.isLogin = 0;
+                }else{
+                    const urlParams = new URLSearchParams(location.search);
+                    this.componentName = urlParams.get("name") || "index";
+                    this.isLogin = 1;
+                    this.getData()
+                    this.userInfo = JSON.parse(localStorage.getItem("user_info"));
+                }
+            },
+            getData(){
+                if(this.componentName.indexOf("Size")>-1){
+                    this.getAllSize()
+                }else if(this.componentName.indexOf("Upload")>-1){
+                    this.getMyUpload()
+                }else if(this.componentName.indexOf("Orders")>-1){
+                    this.getMyOrders();
+                }else if(this.componentName.indexOf("Cart")>-1){
+                    this.getMyCart();
+                }else if(this.componentName.indexOf("Frame")>-1){
+                    this.getAllFrame();
+                }
+            },
+            getAllFrame(){
+                request({
+                    url:"/client/frame",
+                    method:"get",
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        this.frameList = res.data;
+                    }
+                })
+            },
+            getMyCart(){
+                request({
+                    url:"/client/cart",
+                    method:"get",
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        this.cartList = res.data.map(item=>{
+                            return{
+                                ...item,
+                                url:item.framed_url || item.original_url
+                            }
+                        });
+                    }
+                })
+            },
+            getMyOrders(){
+                request({
+                    url:"/client/order",
+                    method:"get",
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        this.orderList = res.data;
+                        this.orderList.map(item=>{
+                            item.photos.forEach(child=>{
+                                child.url = child.framed_url || child.original_url
+                            })
+                            return item;
+                        })
+                    }
+                })
+            },
+            getAllSize(){
+                request({
+                    url:"/client/size",
+                    method:"get",
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        this.sizeList = res.data;
+                    }
+                }).catch(e=>{
+                    this.sizeList = [];
+                })
+            },
+            setSize(){
+                sessionStorage.setItem('selectSize',this.sizeList[this.sizeActiveIndex].size)
+                sessionStorage.setItem('selectSizeId',this.sizeList[this.sizeActiveIndex].id)
+            },
+            getMyUpload(){
+                request({
+                    url:"/client/photo/size/"+sessionStorage.getItem("selectSizeId"),
+                    method:"get",
+                }).then(res=>{
+                    if(res.msg == 'success'){
+                        this.photoList = res.data;
+                    }
+                }).catch(e=>{
+                    this.photoList = [];
+                })
+            },
+            loginOutHandle(){
+                localStorage.clear();
+                this.init();
+            },
+            loginHandle(){
+                request({
+                    url:"/client/login",
+                    method:"post",
+                    data:this.loginForm
+                }).then(res=>{
+                  if(res.msg == 'success'){
+                      localStorage.setItem("user_token",res.data.token);
+                      localStorage.setItem("user_info",JSON.stringify(res.data));
+                      this.init()
+                      Object.assign(this.loginForm,{email:"",password:""})
+                  }
+                })
+            },
+            regHandle(){
+                request({
+                    url:"/client/register",
+                    method: "post",
+                    data:this.regForm
+                }).then(res=>{
+                    if(res.msg=='success'){
+                        this.loginForm = {...this.regForm};
+                        this.loginHandle()
+                        Object.assign(this.regForm,{
+                            email: "",
+                            username: "",
+                            password: "",
+                            repeat_password: ""
+                        })
+                    }
+                })
+            },
+        }
+    })
+
+    function openModal() {
+        document.querySelector(".modal").style.display = "flex";
+    }
+
+    function closeModal(){
+        document.querySelector(".modal").style.display = "none";
+    }
+</script>
+</body>
+</html>

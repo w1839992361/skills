@@ -89,97 +89,97 @@ class DatabaseSeeder extends Seeder
 
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>550,
             "name"=>"black",
             "size_id"=>1,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>550,
             "name"=>"red",
             "size_id"=>1,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>980,
             "name"=>"black",
             "size_id"=>2,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>850,
             "name"=>"red",
             "size_id"=>2,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>520,
             "name"=>"black",
             "size_id"=>3,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>1150,
             "name"=>"red",
             "size_id"=>3,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>450,
             "name"=>"red",
             "size_id"=>4,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>5506,
             "name"=>"white",
             "size_id"=>4,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>2501,
             "name"=>"red",
             "size_id"=>5,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>5.5,
             "name"=>"green",
             "size_id"=>5,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>2220,
             "name"=>"blue",
             "size_id"=>6,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>1999,
             "name"=>"yellow",
             "size_id"=>6,
         ]);
 
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>771,
             "name"=>"red",
             "size_id"=>7,
         ]);
         Frame::create([
-            "url"=>"http://127.0.0.1/laravel/public/storage/mockup_1.jpg",
+            "url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/mockup_1.jpg",
             "price"=>2888,
             "name"=>"pink",
             "size_id"=>7,
@@ -228,8 +228,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -237,8 +237,8 @@ class DatabaseSeeder extends Seeder
         ]);
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>1,
@@ -247,8 +247,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -257,7 +257,7 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/BYb4sP9MO9I123gkYLcDN4DnR3rqW6tVqk6mQIwW.jpg",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/BYb4sP9MO9I123gkYLcDN4DnR3rqW6tVqk6mQIwW.jpg",
             "framed_url"=>null,
             "status"=>"uploaded",
             "frame_id"=>null,
@@ -267,8 +267,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -277,8 +277,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>1,
             "frame_id"=>2,
@@ -288,8 +288,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>2,
             "frame_id"=>2,
@@ -299,8 +299,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"uploaded",
             "frame_id"=>2,
             "size_id"=>2,
@@ -309,8 +309,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>2,
             "frame_id"=>2,
@@ -322,8 +322,8 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
-            "framed_url"=>"http://127.0.0.1/laravel/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
+            "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/AstzYRuDeS4Lwge5kbvwEpEG9fEkaXHSft2vvWnq.png",
             "status"=>"order",
             "order_id"=>1,
             "frame_id"=>2,
@@ -336,7 +336,7 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
             "framed_url"=>null,
             "status"=>"uploaded",
             "size_id"=>1,
@@ -347,7 +347,7 @@ class DatabaseSeeder extends Seeder
 
         Photo::create([
             "edited_url"=>null,
-            "original_url"=>"http://127.0.0.1/laravel/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
+            "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/3S7f778XPkaZGVdkIOlLGVuveG9e9YkyQNXrAVDm.jpg",
             "framed_url"=>null,
             "status"=>"cart",
             "size_id"=>1,
