@@ -111,43 +111,44 @@ class UserController extends Controller
 
     // 管理员获取所有用户
     function getAllUsers(){
-        $users = User::all()->map(function ($item){
-            Photo::where("user_id",$item->id)->where('status',"cart")->get()->map(function ($photo) use ($item){
-                $item->cart_total += $photo->size->price/100 + ($photo->frame ? $photo->frame->price/100 : 0);
+        $users = User::all()->map(function ($item) {
+            Photo::where("user_id", $item->id)->where('status', "cart")->get()->map(function ($photo) use ($item) {
+                $item->cart_total += $photo->size->price / 100 + ($photo->frame ? $photo->frame->price / 100 : 0);
             });
 //            if($item->cart_total >0){
-                return $item;
+            return $item;
 //            }
-        })->filter();
+        });
+//        })->filter();
+//
+//        $usersArray = $users->map(function ($user) {
+//            return $user->toArray();
+//        })->values()->all();
 
-        $usersArray = $users->map(function ($user) {
-            return $user->toArray();
-        })->values()->all();
 
-
-        return $this->successResponse($usersArray);
+        return $this->successResponse($users);
     }
 
     // 管理员获取所有用户的购物车
-    function getAllUsersCart(){
-        $user = User::all();
-        $data = [];
-        foreach ($user as $item){
-            $photos = Photo::where("user_id",$item->id)->where("status","cart")->get();
-            $item->cart_total = 0;
-            foreach ($photos as $child){
-                $child->frame_price = $child->frame ?$child->frame->price/100 :0;
-                $child->print_price = $child->size->price/100;
-                $item->cart_total+= $child->frame_price+$child->print_price;
-            }
-
-            if($item->cart_total >0){
-                array_push($data,$item);
-            }
-        }
-        unset($item);
-        return $this->successResponse($data);
-    }
+//    function getAllUsersCart(){
+//        $user = User::all();
+//        $data = [];
+//        foreach ($user as $item){
+//            $photos = Photo::where("user_id",$item->id)->where("status","cart")->get();
+//            $item->cart_total = 0;
+//            foreach ($photos as $child){
+//                $child->frame_price = $child->frame ?$child->frame->price/100 :0;
+//                $child->print_price = $child->size->price/100;
+//                $item->cart_total+= $child->frame_price+$child->print_price;
+//            }
+//
+//            if($item->cart_total >0){
+//                array_push($data,$item);
+//            }
+//        }
+//        unset($item);
+//        return $this->successResponse($data);
+//    }
 
     // 管理员根据id中指密码
     function resetUserById($id){

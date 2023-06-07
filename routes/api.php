@@ -39,7 +39,6 @@ Route::prefix("v1")->group(function (){
 
 
            Route::get("user",[\App\Http\Controllers\UserController::class,"getAllUsers"]);
-           Route::get("getCart",[\App\Http\Controllers\UserController::class,"getAllUsersCart"]);
            Route::post("user/reset/{user_id}",[\App\Http\Controllers\UserController::class,"resetUserById"]);
            Route::delete("user/{user_id}",[\App\Http\Controllers\UserController::class,"deleteUserById"]);
 
