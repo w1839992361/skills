@@ -80,7 +80,8 @@ class UserController extends Controller
     // 用户退出
     function logout(){
         $user = Auth::user();
-        $user->update(["token"=>null]);
+        $user->token = null;
+        $user->save();
         return $this->successResponse();
     }
 
@@ -110,7 +111,16 @@ class UserController extends Controller
 
     // 管理员获取所有用户
     function getAllUsers(){
-        $users = User::all();
+        $users = User::all()->map(function ($item){
+            Photo::where("user_id",$item->id)->where('status',"cart")->get()->map(function ($photo) use ($item){
+                $item->cart_total += $photo->size->price/100 + ($photo->frame ? $photo->frame->price/100 : 0);
+            });
+            if($item->cart_total >0){
+                return $item;
+            }else{
+                return [];
+            }
+        })->filter();
         return $this->successResponse($users);
     }
 
