@@ -115,9 +115,9 @@ class UserController extends Controller
             Photo::where("user_id",$item->id)->where('status',"cart")->get()->map(function ($photo) use ($item){
                 $item->cart_total += $photo->size->price/100 + ($photo->frame ? $photo->frame->price/100 : 0);
             });
-            if($item->cart_total >0){
+//            if($item->cart_total >0){
                 return $item;
-            }
+//            }
         })->filter();
 
         $usersArray = $users->map(function ($user) {
