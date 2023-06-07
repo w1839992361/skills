@@ -26,17 +26,41 @@ class DatabaseSeeder extends Seeder
            "email"=>"admin@eaphoto.com",
             "full_name"=>"admin",
             "password"=>Hash::make("admin"),
-            "create_time"=>date("Y-m-d h:m")
         ]);
 
         Admin::create([
-            "id"=>3,
+            "email"=>"admin4@eaphoto.com",
+            "full_name"=>"admin",
+            "password"=>Hash::make("admin"),
+        ]);
+
+
+        Admin::create([
             "email"=>"admin3@eaphoto.com",
             "full_name"=>"admin",
             "password"=>Hash::make("admin"),
-            "create_time"=>date("Y-m-d h:m")
         ]);
 
+
+
+
+        User::create([
+            "email"=>"user@eaphoto.com",
+            "username"=>"sample_user",
+            "password"=>Hash::make("user"),
+        ]);
+
+        User::create([
+            "email"=>"us3er@eaphoto.com",
+            "username"=>"sample_user",
+            "password"=>Hash::make("user"),
+        ]);
+
+        User::create([
+            "email"=>"us4er@eaphoto.com",
+            "username"=>"sample_user",
+            "password"=>Hash::make("user"),
+        ]);
 
         Size::create([
             "size"=>"1 Inch",
@@ -195,7 +219,6 @@ class DatabaseSeeder extends Seeder
            "name_on_card"=>"Matthew XXX",
            "exp_date"=>'2023-05-16',
             "cvv"=>"246",
-            "total"=>0,
             "order_placed"=>'2023-05-16 13:58',
             "status"=>"Valid"
         ]);
@@ -208,7 +231,6 @@ class DatabaseSeeder extends Seeder
             "name_on_card"=>"Matthew XXX",
             "exp_date"=>'2023-05-16',
             "cvv"=>"246",
-            "total"=>0,
             "order_placed"=>'2023-05-16 13:58',
             "status"=>"Valid",
         ]);
@@ -221,7 +243,6 @@ class DatabaseSeeder extends Seeder
             "name_on_card"=>"Matthew XXX",
             "exp_date"=>'2023-05-16',
             "cvv"=>"246",
-            "total"=>0,
             "order_placed"=>'2023-05-16 13:58',
             "status"=>"Valid",
         ]);
@@ -357,30 +378,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-
-        User::create([
-            "email"=>"user@eaphoto.com",
-            "username"=>"sample_user",
-            "password"=>Hash::make("user"),
-            "cart_total"=>300,
-            "create_time"=>"2023-05-16 11:12",
-        ]);
-
-        User::create([
-            "email"=>"us3er@eaphoto.com",
-            "username"=>"sample_user",
-            "password"=>Hash::make("user"),
-            "cart_total"=>300,
-            "create_time"=>"2023-05-16 11:12",
-        ]);
-
-        User::create([
-            "email"=>"us4er@eaphoto.com",
-            "username"=>"sample_user",
-            "password"=>Hash::make("user"),
-            "cart_total"=>300,
-            "create_time"=>"2023-05-16 11:12",
-        ]);
 
     }
 }

@@ -22,9 +22,9 @@ class CreateOrdersTable extends Migration
             $table->string("name_on_card");
             $table->string("exp_date");
             $table->string("cvv");
-            $table->integer("total");
+            $table->integer("total")->default(0);
             $table->string("order_placed");
-            $table->string("status");
+            $table->string("status")->default("Invalid");
             $table->timestamps();
         });
     }

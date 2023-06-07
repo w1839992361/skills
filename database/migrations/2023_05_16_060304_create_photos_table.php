@@ -22,7 +22,7 @@ class CreatePhotosTable extends Migration
             $table->foreignIdFor(\App\Models\Size::class)->constrained();
             $table->integer("user_id");
             $table->foreignIdFor(\App\Models\Order::class)->nullable()->constrained();
-            $table->string("status");
+            $table->string("status")->default("uploaded");
             $table->timestamps();
         });
     }

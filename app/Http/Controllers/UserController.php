@@ -117,11 +117,15 @@ class UserController extends Controller
             });
             if($item->cart_total >0){
                 return $item;
-            }else{
-                return [];
             }
         })->filter();
-        return $this->successResponse($users);
+
+        $usersArray = $users->map(function ($user) {
+            return $user->toArray();
+        })->values()->all();
+
+
+        return $this->successResponse($usersArray);
     }
 
     // 管理员获取所有用户的购物车
