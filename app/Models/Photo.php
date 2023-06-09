@@ -24,4 +24,5 @@ class Photo extends Model
     function frame(){
         return $this->belongsTo(Frame::class);
     }
+
 }

@@ -11,6 +11,8 @@ class Size extends Model
     protected $fillable = [
       "price"
     ];
+
+
     protected $hidden = [
         'created_at', 'updated_at',
     ];

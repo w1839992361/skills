@@ -251,7 +251,7 @@ class DatabaseSeeder extends Seeder
             "edited_url"=>null,
             "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
             "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
-            "status"=>"uploaded",
+            "status"=>"cart",
             "frame_id"=>2,
             "size_id"=>2,
             "user_id"=>1
@@ -260,7 +260,7 @@ class DatabaseSeeder extends Seeder
             "edited_url"=>null,
             "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
             "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
-            "status"=>"uploaded",
+            "status"=>"cart",
             "frame_id"=>2,
             "size_id"=>1,
             "user_id"=>1
@@ -270,7 +270,7 @@ class DatabaseSeeder extends Seeder
             "edited_url"=>null,
             "original_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/Y5tuCM6soFEUfu8h1XtGb2HjFRVBIFqPS2KbPajE.jpg",
             "framed_url"=>"http://127.0.0.1/ws02_ServerSide/public/storage/zXR9Hzw3zofnvW8XvFmnl8jfz9KwnUTKB8FWFsRw.png",
-            "status"=>"uploaded",
+            "status"=>"cart",
             "frame_id"=>2,
             "size_id"=>2,
             "user_id"=>1

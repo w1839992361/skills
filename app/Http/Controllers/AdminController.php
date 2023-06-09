@@ -40,7 +40,7 @@ class AdminController extends Controller
            "email"=>$req->email,
            "full_name"=>$req->full_name,
            "password"=> Hash::make($req->password), // 进行hash加密
-            "create_time"=>date("Y-m-d h:m")
+            "create_time"=>date("Y-m-d H:i")
         ]);
         if($row){ // 如果创建成功返回
             return response()->json([

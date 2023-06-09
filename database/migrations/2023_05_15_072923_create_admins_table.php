@@ -19,7 +19,7 @@ class CreateAdminsTable extends Migration
             $table->string("full_name");
             $table->string("token")->nullable();
             $table->string("password");
-            $table->string("create_time")->default(date("Y-m-d h:m"));
+            $table->string("create_time")->default(date("Y-m-d H:i"));
             $table->timestamps();
         });
     }

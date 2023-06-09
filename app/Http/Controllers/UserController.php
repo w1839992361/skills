@@ -64,7 +64,7 @@ class UserController extends Controller
             "email"=>$req->email,
             "username"=>$req->username,
             "password"=> Hash::make($req->password),
-            "create_time"=>date("Y-m-d h:m")
+            "create_time"=>date("Y-m-d H:i")
         ]);
 
         if($row){

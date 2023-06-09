@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->string("password");
             $table->string("token")->nullable();
             $table->integer("cart_total")->default(0);
-            $table->string("create_time")->default(date("Y-m-d h:m"));
+            $table->string("create_time")->default(date("Y-m-d H:i"));
             $table->timestamps();
         });
     }

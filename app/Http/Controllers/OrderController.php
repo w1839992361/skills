@@ -102,8 +102,8 @@ class OrderController extends Controller
             "shipping_address"=>"required",
             "card_number"=>"required",
             "name_on_card"=>"required",
-            "exp_date"=>"required",
-            "cvv"=>"required",
+            "exp_date"=>"required|date_format:Y-m-d",
+            "cvv"=>"required|size:3",
             "photo_id_list"=>"required|array"
         ]);
 
@@ -129,7 +129,7 @@ class OrderController extends Controller
             "exp_date"=>$req->exp_date,
             "cvv"=>$req->cvv,
             "total"=>count($req->photo_id_list),
-            "order_placed"=>date("Y-m-d h:m"),
+            "order_placed"=>date("Y-m-d H:i"),
             "status"=>"Valid",
         ]);
 
