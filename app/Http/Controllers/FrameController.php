@@ -9,30 +9,13 @@ use Illuminate\Http\Request;
 class FrameController extends Controller
 {
 
-    // getall
-    function getAllFrame(){
-//        //        $frames = Frame::join("sizes", "frames.size_id", "=", "sizes.id")
-////            ->select("frames.id", "frames.url", "frames.price", "frames.name", "sizes.size")
-////            ->get();
-////        $frames = Frame::with('size')->get();
-//        $frames = Frame::all();
-//        foreach ($frames as $item){
-//            $item->size = Size::find($item->size_id)->size;
-//            $item->price = $item->price/100;
-//        }
-//        unset($item);
-//        $frames = Frame::join("sizes","frames.size_id","=","sizes.id")->select("frames.id","frames.url","frames.price","frames.name","sizes.size")->get()->map(function ($item){
-//            $item->price /=100;
-//            return $item;
-//        });
-//      return  response()->json([
-//          "msg"=>"success",
-//          "data"=>$frames
-//      ]);
+    // getAll
+    function getAllFrame()
+    {
 
-        $frames = Frame::all()->map(function ($item){
+        $frames = Frame::all()->map(function ($item) {
             $item->size = Size::find($item->size_id)->size;
-            $item->price /=100;
+            $item->price /= 100;
             return $item;
         });
 
@@ -40,10 +23,11 @@ class FrameController extends Controller
     }
 
     // update
-    function updateFrameById(Request $req,$id){
+    function updateFrameById(Request $req, $id)
+    {
         $frame = Frame::find($id);
-        if(!$frame) return $this->notFoundResponse();
-        $frame->update(["price"=>$req->get("price")*100,"name"=>$req->get("frame_name")]);
+        if (!$frame) return $this->notFoundResponse();
+        $frame->update(["price" => $req->get("price") * 100, "name" => $req->get("frame_name")]);
         return $this->successResponse($frame);
     }
 }

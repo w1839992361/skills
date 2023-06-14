@@ -24,7 +24,7 @@ class CreateOrdersTable extends Migration
             $table->string("cvv");
             $table->integer("total")->default(0);
             $table->string("order_placed");
-            $table->string("status")->default("Invalid");
+            $table->string("status")->default("Valid");
             $table->timestamps();
         });
     }

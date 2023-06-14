@@ -31,8 +31,8 @@ class AuthController extends Controller
                 "email"=>$user->email,
                 "full_name"=>$user->full_name,
                 "token"=>$user->token,
-                "created_at"=>$user->created_at,
-//              "create_time"=>$user->create_time
+//                "created_at"=>$user->created_at,
+              "create_time"=>$user->create_time
             ]);
         }
 

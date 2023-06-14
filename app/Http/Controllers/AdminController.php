@@ -13,72 +13,68 @@ class AdminController extends Controller
 {
     //
 
-    function getAllAdmins(){
+    function getAllAdmins()
+    {
         return response()->json([
-           "msg"=>"success",
-           "data"=>Admin::all("id","email","full_name","created_at")
+            "msg" => "success",
+            "data" => Admin::all("id", "email", "full_name", "created_at")
         ]);
     }
 
-    function createAdmin(Request $req){
+    function createAdmin(Request $req)
+    {
         // 获取请求中的数据
-        $data = $req->only("email","full_name","password","repeat_password");
+        $data = $req->only("email", "full_name", "password", "repeat_password");
         // 使用 Laravel 自带的 Validator 类进行验证
-        $val = Validator::make($data,[
-            "email"=>"required|email|unique:admins",
-            "full_name"=>"required",
-            "password"=>"required",
-            "repeat_password"=>"required|same:password",
+        $val = Validator::make($data, [
+            "email" => "required|email|unique:admins",
+            "full_name" => "required",
+            "password" => "required",
+            "repeat_password" => "required|same:password",
         ]);
-        if($val->fails()){
-            $errorMsg = $val->errors()->first() =='The email has already been taken.' ?"email has already been used" :"data cannot be processed";
-                 return response()->json([
-                    "msg"=>$errorMsg
-                ],422);
+        if ($val->fails()) {
+            $errorMsg = $val->errors()->first() == 'The email has already been taken.' ? "email has already been used" : "data cannot be processed";
+            return $this->customResponse($errorMsg, 422);
         }
         $row = Admin::create([
-           "email"=>$req->email,
-           "full_name"=>$req->full_name,
-           "password"=> Hash::make($req->password), // 进行hash加密
-            "create_time"=>date("Y-m-d H:i")
+            "email" => $req->email,
+            "full_name" => $req->full_name,
+            "password" => Hash::make($req->password), // 进行hash加密
+            "create_time" => date("Y-m-d H:i")
         ]);
-        if($row){ // 如果创建成功返回
-            return response()->json([
-                "msg"=>"success",
-                "data"=>[
-                    "id"=>$row->id,
-                    "email"=>$row->email,
-                    "full_name"=>$row->full_name,
-                    "create_time"=>$row->create_time
-                ]
+        if ($row) { // 如果创建成功返回
+            return $this->successResponse([
+                "id" => $row->id,
+                "email" => $row->email,
+                "full_name" => $row->full_name,
+                "create_time" => $row->create_time
             ]);
         }
     }
 
-    function resetAdminPasswordById($id){
+    function resetAdminPasswordById($id)
+    {
         // 根据id查询管理员
         $admin = Admin::find($id);
         // 如果不存在返回404
-        if(!$admin) return response()->json(["msg"=>"not found"],404);
+        if (!$admin) return $this->notFoundResponse();
         // 调用Controller里面的随机密码方法
         $pwd = $this->randPassword(8);
         // 更新
-        $admin->update(["password"=>Hash::make($pwd)]);
+        $admin->update(["password" => Hash::make($pwd)]);
         // 返回成功信息和新密码
-        return response()->json([
-            "msg"=>"success",
-            "data"=>[
-                "id"=>$admin->id,
-                "password"=>$pwd,
-            ]
+        return $this->successResponse([
+            "id" => $admin->id,
+            "password" => $pwd,
         ]);
     }
 
-    function deleteAdminById($id){
+    function deleteAdminById($id)
+    {
         $admin = Admin::find($id);
-        if(!$admin) return response()->json(["msg"=>"not found"],404);
+        if (!$admin) return $this->notFoundResponse();
         $admin->delete();
-        return response()->json(["msg"=>"success"]);
+        return $this->successResponse();
     }
 
 }

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Str;
 
 class Controller extends BaseController
 {
@@ -37,12 +38,7 @@ class Controller extends BaseController
 
     function randPassword($count = 8)
     {
-        $str = "qwertyuiopasdfghjklzxcvbnm123456789QWERTYUIOPASDFGHJKLZXCVBNM";
-        $pwd = '0';
-        for ($i = 0; $i < $count - 1; $i++) {
-            $pwd .= $str[rand(0, strlen($str) - 1)];
-        }
-        return $pwd;
+        return '0' . Str::random($count - 1);
     }
 
 }
