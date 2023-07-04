@@ -104,6 +104,9 @@ class PhotoController extends Controller
         }
         // 如果未指定相框ID，则返回成功响应，不设置相框
         if (!$frame_id) {
+            $photo->framed_url = null;
+            $photo->frame_id = null;
+            $photo->save();
             return $this->successResponse(["id" => $photo->id, "frame_url" => null]);
         }
 
@@ -117,6 +120,9 @@ class PhotoController extends Controller
         }
 
         // 如果照片和相框尺寸不同，则返回成功响应，不设置相框
+        $photo->framed_url = null;
+        $photo->frame_id = null;
+        $photo->save();
         return $this->successResponse(["id" => $photo->id, "frame_url" => null]);
     }
 

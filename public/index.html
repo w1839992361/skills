@@ -907,6 +907,7 @@
                     method: 'post',
                     data: fileData
                 }).then(res => {
+                    event.target.value = '';
                     console.log(res)
                     this.getPhotos();
                 })

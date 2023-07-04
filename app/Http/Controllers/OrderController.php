@@ -58,8 +58,8 @@ class OrderController extends Controller
         $user = Auth::user();
         $userId = $user->id;
         // 模型里面定义的一对多  一个订单有很多照片 hasMany
-        $orders = Order::with("photos")->whereHas("photos",function ($query) use ($userId){
-            $query->where('user_id',$userId);
+        $orders = Order::with("photos")->whereHas("photos", function ($query) use ($userId) {
+            $query->where('user_id', $userId);
         })->get();
         $data = $orders->map(function ($order) {
             $order->total = $order->photos->reduce(function ($carry, $photo) use ($order) {
@@ -115,9 +115,9 @@ class OrderController extends Controller
             "name_on_card" => $req->name_on_card,
             "exp_date" => $req->exp_date,
             "cvv" => $req->cvv,
-            "total" => count($req->photo_id_list),
+//            "total" => count($req->photo_id_list),
             "order_placed" => date("Y-m-d H:i"),
-            "status" => "Valid",
+//            "status" => "Valid",
         ]);
 
         // 将照片与订单关联，并更新照片状态为已下单
