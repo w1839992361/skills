@@ -18,7 +18,7 @@ class OrderController extends Controller
     {
         $orders = Order::with("photos")->get();
         $data = $orders->map(function ($order) {
-            $order->total = $order->photos->reduce(function ($carry, $photo) use ($order) {
+            $order->total = $order->photos->reduce(function ($carry, $photo) {
                 $frame_price = $photo->frame ? $photo->frame->price / 100 : 0;
                 $frame_name = $photo->frame ? $photo->frame->name : "no frame";
                 $size = Size::find($photo->size_id);

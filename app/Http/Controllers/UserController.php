@@ -11,34 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // 用户登录
-    function login(Request $req){
-        $data = $req->only("email","password");
-
-        $val = Validator::make($data,[
-            "email"=>"required|email",
-            "password"=>"required"
-        ]);
-
-        if($val->fails()){
-            return $this->dataUnprocessedResponse();
-        }
-
-        if(Auth::guard("user_web")->attempt($data)){
-            $user = Auth::guard("user_web")->user();
-            $user->token = md5($user->email);
-            $user->save();
-            return $this->successResponse([
-                "id"=>$user->id,
-                "email"=>$user->email,
-                "username"=>$user->username,
-                "token"=>$user->token,
-                "create_time"=>$user->create_time,
-            ]);
-        }
-
-        return $this->customResponse("user credentials are invalid",401);
-    }
 
     // 注册用户
     function register(Request $req){
@@ -77,13 +49,6 @@ class UserController extends Controller
         }
     }
 
-    // 用户退出
-    function logout(){
-        $user = Auth::user();
-        $user->token = null;
-        $user->save();
-        return $this->successResponse();
-    }
 
     // 重置密码
     function resetPassword(Request $req){
@@ -111,7 +76,7 @@ class UserController extends Controller
 
     // 管理员获取所有用户
     function getAllUsers(){
-        $users = User::all()->map(function ($item) {
+        $users = User::all("id", "email", "username", "create_time", "cart_total")->map(function ($item) {
             Photo::where("user_id", $item->id)->where('status', "cart")->get()->map(function ($photo) use ($item) {
                 $item->cart_total += $photo->size->price / 100 + ($photo->frame ? $photo->frame->price / 100 : 0);
             });
@@ -155,7 +120,7 @@ class UserController extends Controller
         $user = User::find($id);
         if(!$user) return $this->notFoundResponse();
 
-        $pwd = $this->randPassword(8);
+        $pwd = $this->randPassword();
         $user->update(["password"=> Hash::make($pwd)]);
 
         return $this->successResponse([
@@ -176,7 +141,6 @@ class UserController extends Controller
     function resetUserCartById($id){
         $user = User::find($id);
         if(!$user) return $this->notFoundResponse();
-        $user->update(['cart_total' => null]);
         Photo::where("user_id",$id)->where("status","cart")->delete();
         return $this->successResponse();
     }

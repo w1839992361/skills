@@ -131,22 +131,21 @@ class PhotoController extends Controller
     {
         $user = Auth::user();
 
-        $photos = Photo::where("user_id", $user->id)->where("status", "cart")->get();
-
-        foreach ($photos as $item) {
+        $photos = Photo::where("user_id", $user->id)->where("status", "cart")->get()->map(function ($item) {
             $size = Size::find($item->size_id);
-            $item->print_price = $size->price / 100;
             $item->size = $size->size;
+            $item->print_price = $size->price / 100;
             if ($item->frame_id) {
                 $frame = Frame::find($item->frame_id);
-                $item->frame_price = $frame->price / 100;
                 $item->frame_name = $frame->name;
+                $item->frame_price = $frame->price / 100;
             } else {
+                $item->frame_name = "no frame";
                 $item->frame_price = 0;
-                $item->frame_name = "no frame_name";
             }
-        }
-        unset($item);
+            return $item;
+        });
+
         return $this->successResponse($photos);
     }
 

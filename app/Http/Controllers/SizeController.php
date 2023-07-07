@@ -10,7 +10,7 @@ class SizeController extends Controller
 {
     // 获取所有尺寸
     function getAllSize(){
-        $size = Size::all()->map(function ($item){
+        $size = Size::all("id", "size", "width", "height", "price")->map(function ($item) {
             $item->price /= 100;
             return $item;
         });
@@ -21,7 +21,7 @@ class SizeController extends Controller
         $size = Size::find($id);
         if (!$size) return $this->notFoundResponse();
 
-        if($req->get("price") <0) return $this->dataUnprocessedResponse();
+        if (!$req->price || $req->price < 0) return $this->dataUnprocessedResponse();
 
         $size->update(["price"=>$req->get("price")*100]);
 

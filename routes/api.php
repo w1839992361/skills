@@ -22,10 +22,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix("v1")->group(function (){
 
    Route::prefix("admin")->group(function (){
-       Route::post('login',[\App\Http\Controllers\AuthController::class,"login"]);
+       Route::post('login',[\App\Http\Controllers\AuthController::class,"manageLogin"]);
 
        Route::middleware("auth:api")->group(function (){
-           Route::post("logout",[\App\Http\Controllers\AuthController::class,"logout"]);
+           Route::post("logout",[\App\Http\Controllers\AuthController::class,"manageLogout"]);
 
            Route::get("size",[\App\Http\Controllers\SizeController::class,"getAllSize"]);
            Route::patch("size/{size_id}",[\App\Http\Controllers\SizeController::class,"updateSize"]);
@@ -53,12 +53,12 @@ Route::prefix("v1")->group(function (){
    });
 
    Route::prefix("client")->group(function (){
-       Route::post('login',[\App\Http\Controllers\UserController::class,"login"]);
+       Route::post('login',[\App\Http\Controllers\AuthController::class,"userLogin"]);
 
        Route::post('register',[\App\Http\Controllers\UserController::class,"register"]);
 
        Route::middleware("auth:user_api")->group(function (){
-           Route::post('logout',[\App\Http\Controllers\UserController::class,"logout"]);
+           Route::post('logout',[\App\Http\Controllers\AuthController::class,"userLogout"]);
 
            Route::post('user/reset',[\App\Http\Controllers\UserController::class,"resetPassword"]);
 

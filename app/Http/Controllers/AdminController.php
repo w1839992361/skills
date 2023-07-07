@@ -15,9 +15,8 @@ class AdminController extends Controller
 
     function getAllAdmins()
     {
-        return response()->json([
-            "msg" => "success",
-            "data" => Admin::all("id", "email", "full_name", "created_at")
+        return $this->successResponse([
+            Admin::all("id", "email", "full_name", "created_at")
         ]);
     }
 
@@ -59,7 +58,7 @@ class AdminController extends Controller
         // 如果不存在返回404
         if (!$admin) return $this->notFoundResponse();
         // 调用Controller里面的随机密码方法
-        $pwd = $this->randPassword(8);
+        $pwd = $this->randPassword();
         // 更新
         $admin->update(["password" => Hash::make($pwd)]);
         // 返回成功信息和新密码
