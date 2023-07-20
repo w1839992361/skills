@@ -25,7 +25,8 @@ class PhotoController extends Controller
         $photo = Photo::find($id);
         if (!$photo) return;
         $file = url('/public/storage/' . $req->file('image')->storePublicly('/'));
-        $photo->update(["original_url" => $file]);
+        $photo->edited_url = $file;
+        $photo->save();
         return $this->successResponse();
     }
 
@@ -84,7 +85,7 @@ class PhotoController extends Controller
     }
 
 
-    function setFrame($photo_id, $frame_id = null, Request $req)
+    function setFrame(Request $req,$photo_id, $frame_id = null)
     {
         // 验证上传的图片文件
         $val = Validator::make($req->only("image"), [

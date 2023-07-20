@@ -15,9 +15,9 @@ class AdminController extends Controller
 
     function getAllAdmins()
     {
-        return $this->successResponse([
+        return $this->successResponse(
             Admin::all("id", "email", "full_name", "created_at")
-        ]);
+        );
     }
 
     function createAdmin(Request $req)

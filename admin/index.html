@@ -12,9 +12,31 @@
     <script src="./assets/js/vue-router.js"></script>
     <script src="./assets/js/axios.js"></script>
     <script src="./assets/js/app.js"></script>
+    <style>
+        .list-enter-active, .list-leave-active {
+            transition: all .6s;
+        }
+
+        .list-enter, .list-leave-to
+            /* .list-leave-active for below version 2.1.8 */
+        {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .top-80 {
+            top: 80px !important;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
+    <div class="alert position-absolute"
+         style="left:50%;margin-left: -130px;top: -50px;transition: all .6s;z-index: 99999"
+         :class="[flag? 'top-80': '',msg == 'success' ? 'alert-success':'alert-danger']">
+        {{msg}}!
+    </div>
+
     <template v-if="$route.path == '/login'">
         <div class="flex-box-center login-box ">
             <div class="login-card card col-md-2 col-sm-4 no-bdr px-5">
@@ -46,7 +68,7 @@
             </a>
             <ul class="navbar-nav px-4 flex-row">
                 <li class="nav-item text-nowrap mr-3">
-                    <div class="navbar-text">{{JSON.parse(localStorage.getItem('userInfo'))?.email}}</div>
+                    <div class="navbar-text">{{JSON.parse(localStorage.getItem('adminInfo'))?.email}}</div>
                 </li>
                 <li class="nav-item text-nowrap">
                     <a class="nav-link" id="logout" href="login.html" @click.prevent="logout">Logout</a>
@@ -55,6 +77,7 @@
         </nav>
 
         <div class="container-fluid">
+
             <div class="d-flex">
                 <!--Left Navbar Area-->
                 <nav class="layout-left sidebar">
@@ -91,6 +114,7 @@
                         </ul>
                     </div>
                 </nav>
+
 
                 <template v-if="$route.path == '/home'">
                     <main role="main" class="layout-right container-fluid">
@@ -233,20 +257,24 @@
                 </template>
 
                 <template v-if="$route.path !='/home' && $route.path !='/login'">
-                    <main role="main" class="layout-right container-fluid mt-3">
-                        <div class=" mb-3 pt-3">
-                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-                                <h1 class="h2">{{$route.name}} List</h1>
-                                <div class="btn-toolbar mb-2 mb-md-0">
-                                    <div class="btn-group mr-2">
-                                        <a href="admin-create.html" class="btn btn-sm btn-outline-primary no-bdr"
-                                           @click.prevent="openModal('#create')">Create new admin account</a>
+                    <transition name="list" mode="out-in">
+
+                        <main role="main" v-show="tableData.length>0" class="layout-right container-fluid mt-3">
+
+                            <div class=" mb-3 pt-3">
+                                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+                                    <h1 class="h2">{{$route.name}} List</h1>
+                                    <div class="btn-toolbar mb-2 mb-md-0" v-if="$route.path == '/admin'">
+                                        <div class="btn-group mr-2">
+                                            <a href="admin-create.html" class="btn btn-sm btn-outline-primary no-bdr"
+                                               @click.prevent="openModal('#create')">Create new admin account</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <my-table :table-data="tableData" v-if="tableData.length>0"></my-table>
-                    </main>
+                            <my-table :table-data="list" v-if="list.length>0"></my-table>
+                        </main>
+                    </transition>
                 </template>
             </div>
 
@@ -343,7 +371,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Frame Edit</h5>
-                    <button type="button" class="close" onclick="closeModal('#frame_edit');resetCreateForm()">
+                    <button type="button" class="close" @click="closeModal('#frame_edit');resetCreateForm()">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -367,7 +395,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm"
-                            onclick="closeModal('#frame_edit');resetCreateForm()">Close
+                            @click="closeModal('#frame_edit');resetCreateForm()">Close
                     </button>
                     <button type="button" class="btn btn-primary btn-sm" @click="saveFrame">Save changes</button>
                 </div>
@@ -489,88 +517,114 @@
         }
     }, (e) => {
         if (e.response.status == 401) {
-            if (localStorage.getItem("token")) app.logout();
+            app.openMsg(e.response.data.msg)
+            if (sessionStorage.getItem('token')) app.logout();
+            router.push('/login')
+        }else{
+            app.openMsg(e.response.data.msg)
         }
     })
 
 
     const router = new VueRouter({
-        routes: []
+        routes: [
+            {
+                path:"/",
+                redirect:"/home"
+            }
+        ]
     })
 
 
     Vue.component('my-table', {
         template: `
-            <table class="table border mb-0 align-middle">
-            <thead>
-            <tr class="">
-                <th v-for="(item,index) in headerList" :key="index">{{ item }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item,index) in tableList" :key="index">
-                <td v-for="(column,idx) in headerList" :key="idx">
-                    {{ column == 'price' || column == 'total' || column == 'cart_total' ? '$' + item[column].toFixed(2) : item[column] }}
-                </td>
-                <td>
-                    <template v-if="$route.path == '/size'">
-                        <button class="btn btn-primary btn-sm no-bdr mr-2"
-                                @click="_this.sizeForm = item;openModal('#size_edit')">Edit
-                        </button>
-                    </template>
-                    <template v-if="$route.path == '/frame'">
-                        <button class="btn btn-primary btn-sm no-bdr mr-2"
-                                @click="_this.frameForm = item;openModal('#frame_edit')">Edit
-                        </button>
-                    </template>
-                    <template v-if="$route.path == '/order'">
-                        <button class="btn btn-primary btn-sm no-bdr mr-2"
-                                @click="_this.orderForm = item;_this.printHandle()">Print
-                        </button>
-                        <button class="btn btn-info btn-sm no-bdr mr-2"
-                                @click="_this.orderDesc = _this.tableData[index].photos;openModal('#details')">Details
-                        </button>
-                        <button class="btn btn-danger btn-sm no-bdr"
-                                @click="_this.orderForm = item;_this.cancelHandle()">Cancel
-                        </button>
-                    </template>
-                    <template v-if="$route.path == '/cart'">
-                        <button class="btn btn-danger btn-sm no-bdr"
-                                @click="_this.cartForm = item;openModal('#confirm');_this.confirmHandle = _this.resetCartHandle">
-                            Reset Cart
-                        </button>
-                    </template>
-                    <template v-if="$route.path == '/admin'">
-                        <button class="btn btn-warning btn-sm no-bdr"
-                                @click="_this.adminForm = item;_this.resetAdminPwd()">Reset Password
-                        </button>
-                        <button class="btn btn-danger btn-sm no-bdr"
-                                @click="_this.adminForm = item;openModal('#confirm');_this.confirmHandle = _this.deleteAdmin">
-                            Delete
-                        </button>
-                    </template>
-                    <template v-if="$route.path == '/user'">
-                        <button class="btn btn-warning btn-sm no-bdr"
-                                @click="_this.userForm = item;_this.resetUserPwd()">Reset Password
-                        </button>
-                        <button class="btn btn-danger btn-sm no-bdr"
-                                @click="_this.userForm = item;openModal('#confirm');_this.confirmHandle = _this.deleteUser">
-                            Delete
-                        </button>
-                    </template>
-                    <template v-if="false">
-                        <button class="btn btn-primary btn-sm no-bdr mr-2">Print</button>
-                        <button class="btn btn-info btn-sm no-bdr mr-2" onclick="openModal('#details')">Details</button>
-                        <button class="btn btn-danger btn-sm no-bdr">Cancel</button>
-                    </template>
-                </td>
-            </tr>
-            </tbody>
-            </table>
+           <div>
+               <table class="table border mb-0 align-middle">
+                   <thead>
+                   <tr class="">
+                       <th v-for="(item,index) in headerList" :key="index">{{ item }}</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   <tr v-for="(item,index) in tableList" :key="index">
+                       <td v-for="(column,idx) in headerList" :key="idx">
+                           {{ column == 'price' || column == 'total' || column == 'cart_total' ? '$' + item[column].toFixed(2) : item[column] }}
+                       </td>
+                       <td>
+                           <template v-if="$route.path == '/size'">
+                               <button class="btn btn-primary btn-sm no-bdr mr-2"
+                                       @click="_this.sizeForm = item;openModal('#size_edit')">Edit
+                               </button>
+                           </template>
+                           <template v-if="$route.path == '/frame'">
+                               <button class="btn btn-primary btn-sm no-bdr mr-2"
+                                       @click="_this.frameForm = item;openModal('#frame_edit')">Edit
+                               </button>
+                           </template>
+                           <template v-if="$route.path == '/order'">
+                               <button class="btn btn-primary btn-sm no-bdr mr-2"
+                                       :disabled="item.status !=='Valid'"
+                                       @click="_this.orderForm = item;_this.printHandle()">Print
+                               </button>
+                               <button class="btn btn-info btn-sm no-bdr mr-2"
+                                       @click="_this.orderDesc = _this.tableData[index].photos;openModal('#details')">Details
+                               </button>
+                               <button class="btn btn-danger btn-sm no-bdr"
+                                       :disabled="item.status !=='Valid'"
+                                       @click="_this.orderForm = item;_this.cancelHandle()">Cancel
+                               </button>
+                           </template>
+                           <template v-if="$route.path == '/cart'">
+                               <button class="btn btn-danger btn-sm no-bdr"
+                                       @click="_this.cartForm = item;openModal('#confirm');_this.confirmHandle = _this.resetCartHandle">
+                                   Reset Cart
+                               </button>
+                           </template>
+                           <template v-if="$route.path == '/admin'">
+                               <button class="btn btn-warning btn-sm no-bdr"
+                                       @click="_this.adminForm = item;_this.resetAdminPwd()">Reset Password
+                               </button>
+                               <button class="btn btn-danger btn-sm no-bdr"
+                                       :disabled="item.email == JSON.parse(localStorage.getItem('adminInfo'))?.email"
+                                       @click="_this.adminForm = item;openModal('#confirm');_this.confirmHandle = _this.deleteAdmin">
+                                   Delete
+                               </button>
+                           </template>
+                           <template v-if="$route.path == '/user'">
+                               <button class="btn btn-warning btn-sm no-bdr"
+                                       @click="_this.userForm = item;_this.resetUserPwd()">Reset Password
+                               </button>
+                               <button class="btn btn-danger btn-sm no-bdr"
+
+                                       @click="_this.userForm = item;openModal('#confirm');_this.confirmHandle = _this.deleteUser">
+                                   Delete
+                               </button>
+                           </template>
+                       </td>
+                   </tr>
+                   </tbody>
+               </table>
+               <nav class="mt-3">
+                   <ul class="pagination justify-content-center">
+                       <li class="page-item">
+                           <a class="page-link" href="#" aria-label="Previous" @click.prevent="_this.page ==1 ? '':_this.page--;_this.changePage(_this.page);">
+                               <span aria-hidden="true">«</span>
+                               <span class="sr-only">Previous</span>
+                           </a>
+                       </li>
+                       <li class="page-item" :class="[_this.page == item ?'active' :'']" v-for="(item,index) in _this.pageCount"><a class="page-link" href="#" @click.prevent="_this.changePage(item)">{{ item }}</a></li>
+                       <li class="page-item">
+                           <a class="page-link" href="#" aria-label="Next" @click.prevent="_this.page>=_this.pageCount ? '':_this.page++;_this.changePage(_this.page);">
+                               <span aria-hidden="true">»</span>
+                               <span class="sr-only">Next</span>
+                           </a>
+                       </li>
+                   </ul>
+               </nav>
+           </div>
         `,
         data: {
             headerList: [],
-            tableList: [],
             _this: null,
         },
         props: {
@@ -578,6 +632,10 @@
                 type: Array,
                 required: true
             }
+        },
+        created(){
+        },
+        methods:{
         },
         computed: {
             headerList() {
@@ -625,14 +683,23 @@
                 email: "",
                 password: "",
                 repeat_password: ""
-            }
+            },
+            flag: false,
+            msg: "",
+            debounceFuc:null,
+            page:1,
+            pageCount:1,
+            list:[],
         },
         created() {
-            this.getData();
+         this.debounceFuc =  this.debounce(this.getData)
+         this.debounceFuc();
         },
         watch: {
             "$route.path"() {
-                this.getData();
+                this.tableData = [];
+                this.debounceFuc();
+                // this.getData();
             }
         },
         methods: {
@@ -642,37 +709,56 @@
                     method: "post",
                     data: this.loginForm,
                 }).then(res => {
-                    if (res.msg =='success'){
-                        localStorage.setItem('token', res.data.token);
-                        localStorage.setItem('userInfo', JSON.stringify(res.data));
-                        this.$router.push('/home')
-                    }
+                    localStorage.setItem('token', res.data.token);
+                    localStorage.setItem('adminInfo', JSON.stringify(res.data));
+                    this.$router.push('/home');
+                    this.openMsg(res.msg)
                 });
+            },
+            changePage(page){
+                this.list = this.tableData.slice((page-1)*10,((page-1)*10)+10);
+            },
+            debounce(fn, delay = 500) {
+                let timer = null;
+                return function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        fn();
+                    }, delay)
+                };
+            },
+            changePage(page){
+                this.page = page;
+                this.list = this.tableData.slice((page-1)*10,((page-1)*10)+10);
             },
             getData() {
                 let path = this.$route.path;
-                if (path == '/size') {
-                    this.getSize();
-                } else if (path == '/frame') {
-                    this.getFrame();
-                } else if (path == '/order') {
-                    this.getOrders();
-                } else if (path == '/cart') {
-                    this.getCart();
-                } else if (path == '/admin') {
-                    this.getAdmin();
-                } else if (path == '/user') {
-                    this.getUser();
-                }
+                setTimeout(() => {
+                    if (path == '/size') {
+                        this.getSize();
+                    } else if (path == '/frame') {
+                        this.getFrame();
+                    } else if (path == '/order') {
+                        this.getOrders();
+                    } else if (path == '/cart') {
+                        this.getCart();
+                    } else if (path == '/admin') {
+                        this.getAdmin();
+                    } else if (path == '/user') {
+                        this.getUser();
+                    }
+                    // this.pageCount = Math.ceil(this.tableData.length/10);
+                    // this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
+                }, 500)
             },
             getSize() {
                 request({
                     url: "/admin/size",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
 
@@ -682,10 +768,9 @@
                     method: "patch",
                     data: this.sizeForm
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.getSize();
-                            closeModal('#size_edit');
-                        }
+                    this.getSize();
+                    closeModal('#size_edit');
+                    this.openMsg(res.msg)
                 });
             },
 
@@ -694,9 +779,9 @@
                     url: "/admin/frame",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data;
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
 
@@ -707,10 +792,9 @@
                     method: "patch",
                     data: this.frameForm
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.getFrame();
-                            closeModal('#frame_edit')
-                        }
+                    this.getFrame();
+                    closeModal('#frame_edit')
+                    this.openMsg(res.msg)
                 });
             },
 
@@ -719,9 +803,9 @@
                     url: "/admin/order",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data;
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
             printHandle() {
@@ -729,9 +813,8 @@
                     url: "/admin/order/complete/" + this.orderForm.id,
                     method: "post",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.getOrders();
-                        }
+                    this.getOrders();
+                    this.openMsg(res.msg);
                 });
             },
             cancelHandle() {
@@ -739,9 +822,8 @@
                     url: "/admin/order/cancel/" + this.orderForm.id,
                     method: "post",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.getOrders();
-                        }
+                    this.getOrders();
+                    this.openMsg(res.msg);
                 });
             },
 
@@ -750,9 +832,9 @@
                     url: "/admin/user",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data;
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
             resetCartHandle() {
@@ -760,10 +842,9 @@
                     url: "/admin/cart/reset/" + this.cartForm.id,
                     method: "post",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.getCart();
-                            closeModal("#confirm")
-                        }
+                    this.getCart();
+                    closeModal("#confirm");
+                    this.openMsg(res.msg);
                 });
             },
 
@@ -772,9 +853,9 @@
                     url: "/admin/admin",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data;
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
 
@@ -783,9 +864,9 @@
                     url: "/admin/user",
                     method: "get",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.tableData = res.data;
-                        }
+                    this.tableData = JSON.parse(JSON.stringify(res.data));
+                    this.pageCount = Math.ceil(this.tableData.length/10);
+                    this.list = this.tableData.slice((this.page-1)*10,((this.page-1)*10)+10);
                 });
             },
             resetAdminPwd() {
@@ -793,10 +874,8 @@
                     url: "/admin/admin/reset/" + this.adminForm.id,
                     method: "post",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.resetPwd = res.data.password;
-                            openModal("#reset_password");
-                        }
+                    this.resetPwd = res.data.password;
+                    openModal("#reset_password");
                 });
             },
 
@@ -805,10 +884,9 @@
                     url: "/admin/admin/" + this.adminForm.id,
                     method: "delete",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            closeModal("#confirm");
-                            this.getAdmin();
-                        }
+                    closeModal("#confirm");
+                    this.getAdmin();
+                    this.openMsg(res.msg);
                 });
             },
 
@@ -817,10 +895,8 @@
                     url: "/admin/user/reset/" + this.userForm.id,
                     method: "post",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            this.resetPwd = res.data.password;
-                            openModal("#reset_password");
-                        }
+                    this.resetPwd = res.data.password;
+                    openModal("#reset_password");
                 });
             },
 
@@ -829,10 +905,8 @@
                     url: "/admin/user/" + this.userForm.id,
                     method: "delete",
                 }).then(res => {
-                        if (res.msg =='success') {
-                            closeModal("#confirm");
-                            this.getUser();
-                        }
+                    closeModal("#confirm");
+                    this.getUser();
                 });
             },
             createHandle() {
@@ -841,11 +915,10 @@
                     method: "post",
                     data: this.createForm,
                 }).then(res => {
-                        if (res.msg =='success') {
-                            closeModal("#create");
-                            this.resetCreateForm();
-                            this.getAdmin();
-                        }
+                    closeModal("#create");
+                    this.resetCreateForm();
+                    this.getAdmin();
+                    this.openMsg(res.msg);
                 });
             },
             resetCreateForm() {
@@ -861,12 +934,21 @@
                     url: "/admin/logout",
                     method: "post",
                 }).then(res => {
-                    if (res.msg =='success') {
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        this.$router.push('/login')
-                    }
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    this.$router.push('/login')
+                    this.openMsg(res.msg);
                 });
+            },
+            openMsg(msg) {
+                this.msg = msg;
+                this.flag = true;
+                setTimeout(()=>{
+                    this.closeMsg()
+                },1000)
+            },
+            closeMsg() {
+                this.flag = false;
             }
         },
     })

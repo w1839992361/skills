@@ -3,14 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="./admin/assets/css/bootstrap.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="./admin/assets/js/jquery-3.3.1.min.js"></script>
     <script src="./admin/assets/js/vue.2.6.12.min.js"></script>
     <script src="./admin/assets/js/axios.js"></script>
     <script src="./admin/assets/js/vue-router.js"></script>
-<!--    <script src="./assets/js/app.js"></script>-->
+    <!--    <script src="./assets/js/app.js"></script>-->
+    <style>
+        .top-80 {
+            top: 80px !important;
+        }
+
+        .list-enter-active, .list-leave-active {
+            transition: all 1s;
+        }
+
+        .list-enter, .list-leave-to
+            /* .list-leave-active for below version 2.1.8 */
+        {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+    </style>
 </head>
 <body>
 <div id="app" :class="[$route.path == '/home' ? 'index-page' :'']">
+    <div class="alert position-absolute"
+         style="left:50%;margin-left: -130px;top: -50px;transition: all .6s;z-index: 99999"
+         :class="[flag? 'top-80': '',msg == 'success' ? 'alert-success':'alert-danger']">
+        {{msg}}!
+    </div>
     <header>
         <div class="inner d-flex main-axis-space-between cross-axis-center">
             <div class="header-left ">
@@ -47,7 +70,7 @@
         </div>
     </header>
 
-    <tempalte v-if="$route.path == '/login'">
+    <template v-if="$route.path == '/login'">
         <div class="inner layout-container" key="1818">
             <main class="main-content">
                 <form action="" class="auth-form" ref="loginForm">
@@ -69,7 +92,7 @@
                 </form>
             </main>
         </div>
-    </tempalte>
+    </template>
 
     <template v-if="$route.path == '/create'">
         <div class="inner layout-container" key="2828">
@@ -202,7 +225,7 @@
                             </button>
                         </div>
 
-                        <img :src="item.original_url" alt="Image">
+                        <img :src="item.framed_url || item.original_url" alt="Image">
                     </div>
                 </div>
 
@@ -353,7 +376,7 @@
         </div>
 
         <div class="modal toast-modal edit-modal">
-            <div class="modal-body ">
+            <div class="modal-Body ">
                 <div>What do you want to do？</div>
                 <div>
                     <a href="photo-processing.html" @click.prevent="editPhotoHandle(cartDesc)">1. Process Photo</a>
@@ -378,16 +401,19 @@
                 <div class="content-group d-flex person-info-form">
                     <div class="form-combination">
                         <label for="full-name">Full Name</label>
-                        <input type="text" class="form-element" id="full-name" v-model="submitOrderForm.full_name" name="full_name">
+                        <input type="text" class="form-element" id="full-name" v-model="submitOrderForm.full_name"
+                               name="full_name">
                     </div>
                     <div class="form-combination ml-30">
                         <label for="phone">Phone Number</label>
-                        <input type="text" class="form-element" id="phone" v-model="submitOrderForm.phone_number" name="phone_number">
+                        <input type="text" class="form-element" id="phone" v-model="submitOrderForm.phone_number"
+                               name="phone_number">
                     </div>
 
                     <div class="form-combination ml-30">
                         <label for="address">Shipping address</label>
-                        <input type="text" class="form-element" id="address" v-model="submitOrderForm.shipping_address" name="shipping_address">
+                        <input type="text" class="form-element" id="address" v-model="submitOrderForm.shipping_address"
+                               name="shipping_address">
                     </div>
                 </div>
 
@@ -395,17 +421,20 @@
                 <div class="content-group d-flex credit-info-form">
                     <div class="form-combination w-30">
                         <label for="card-number">Card Number</label>
-                        <input type="text" class="form-element" id="card-number"  v-model="submitOrderForm.card_number" name="card_number">
+                        <input type="text" class="form-element" id="card-number" v-model="submitOrderForm.card_number"
+                               name="card_number">
                     </div>
 
                     <div class="form-combination ml-30 w-30">
                         <label for="name-on-card">Name on Card</label>
-                        <input type="text" class="form-element" id="name-on-card"  v-model="submitOrderForm.name_on_card" name="name_on_card">
+                        <input type="text" class="form-element" id="name-on-card" v-model="submitOrderForm.name_on_card"
+                               name="name_on_card">
                     </div>
 
                     <div class="form-combination ml-30">
                         <label for="exp-date">Expiration date</label>
-                        <input type="date" class="form-element" id="exp-date" v-model="submitOrderForm.exp_date" name="exp_date">
+                        <input type="date" class="form-element" id="exp-date" v-model="submitOrderForm.exp_date"
+                               name="exp_date">
                     </div>
 
                     <div class="form-combination ml-30 w-15">
@@ -420,7 +449,7 @@
                         <colgroup>
                             <col style="width: 150px;">
                             <col>
-                            <col >
+                            <col>
                             <col style="width: 160px">
                             <col style="width: 160px">
                         </colgroup>
@@ -476,136 +505,136 @@
     </template>
 
     <template v-if="$route.path == '/orders'">
-            <div class="inner layout-container" key="7878">
-                <main class="main-content">
-                    <h1 class="main-title">My Orders</h1>
-                    <table class="table">
-                        <colgroup>
-                            <col style="width: 100px;">
-                            <col>
-                            <col style="width: 200px;">
-                            <col style="width: 100px">
-                            <col style="width: 120px">
-                            <col style="width: 130px">
-                        </colgroup>
-                        <thead>
-                        <tr>
-                            <th class="text-left">No.</th>
-                            <th class="text-left">Thumbnail</th>
-                            <th class="text-left">Order Placed</th>
-                            <th>Status</th>
-                            <th class="text-right">Total</th>
-                            <th class="text-left pl-30">Operation</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="item in orderList">
-                            <td>{{item.id+10000000}}</td>
-                            <td>
-                                <div class="order-thumbnail-list" data-num="5">
-                                    <div class="photo-thumbnail"  v-for="child in item.photos.slice(0,5)">
-                                        <img :src="child.framed_url || child.original_url" alt="">
+        <div class="inner layout-container" key="7878">
+            <main class="main-content">
+                <h1 class="main-title">My Orders</h1>
+                <table class="table">
+                    <colgroup>
+                        <col style="width: 100px;">
+                        <col>
+                        <col style="width: 200px;">
+                        <col style="width: 100px">
+                        <col style="width: 120px">
+                        <col style="width: 130px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="text-left">No.</th>
+                        <th class="text-left">Thumbnail</th>
+                        <th class="text-left">Order Placed</th>
+                        <th>Status</th>
+                        <th class="text-right">Total</th>
+                        <th class="text-left pl-30">Operation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in orderList">
+                        <td>{{item.id + 10000000}}</td>
+                        <td>
+                            <div class="order-thumbnail-list" data-num="5">
+                                <div class="photo-thumbnail" v-for="child in item.photos.slice(0,5)">
+                                    <img :src="child.framed_url || child.original_url" alt="">
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+                            {{item.order_placed}}
+                        </td>
+                        <td class="text-center">
+                            {{item.status}}
+                        </td>
+
+                        <td class="text-right">
+                            ${{item.total.toFixed(2)}}
+                        </td>
+                        <td>
+                            <div class="table-ope">
+                                <button class="btn btn-sm btn-blue" @click="getOrderDetails(item)">View More</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+
+        <div class="modal" id="orderDetails">
+            <div class="modal-Body">
+                <div class="modal-title">More Information</div>
+                <table class="table-bordered mt-30">
+                    <colgroup>
+                        <col style="width: 200px;">
+                        <col>
+                        <col style="width: 160px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <td>Full Name</td>
+                        <td>{{orderDetails.full_name}}</td>
+                        <td>Phone Number</td>
+                        <td>{{orderDetails.phone_number}}</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping Address</td>
+                        <td colspan="3">{{orderDetails.shipping_address}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-30 bg-white form-title">Order List</div>
+
+                <div class=" content-group">
+                    <div class="order-list-table-container">
+                        <table class="table" style="margin-top: -10px">
+                            <colgroup>
+                                <col style="width: 150px;">
+                                <col style="width: 200px">
+                                <col>
+                                <col style="width: 100px">
+                                <col style="width: 100px">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th class="text-left">Thumbnail</th>
+                                <th class="text-left">Frame Name</th>
+                                <th class="text-center">Size</th>
+                                <th class="text-right">Print Price</th>
+                                <th class="text-right">Frame Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="item in orderDetails.photos">
+
+                                <td>
+                                    <div class="photo-thumbnail">
+                                        <img :src="item.framed_url || item.original_url" alt="Image">
                                     </div>
-                                </div>
+                                </td>
+                                <td>
+                                    {{item.frame_name}}
+                                </td>
+                                <td class="text-center">
+                                    {{item.size}}
+                                </td>
+                                <td class="text-right">${{item.print_price.toFixed(2)}}</td>
+                                <td class="text-right">${{item.frame_price.toFixed(2)}}</td>
 
-                            </td>
-                            <td>
-                                {{item.order_placed}}
-                            </td>
-                            <td class="text-center">
-                                {{item.status}}
-                            </td>
-
-                            <td class="text-right">
-                                ${{item.total.toFixed(2)}}
-                            </td>
-                            <td>
-                                <div class="table-ope">
-                                    <button class="btn btn-sm btn-blue" @click="getOrderDetails(item)">View More</button>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </main>
-            </div>
-
-            <div class="modal" id="orderDetails">
-                <div class="modal-body">
-                    <div class="modal-title">More Information</div>
-                    <table class="table-bordered mt-30">
-                        <colgroup>
-                            <col style="width: 200px;">
-                            <col>
-                            <col style="width: 160px;">
-                            <col>
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td>Full Name</td>
-                            <td>{{orderDetails.full_name}}</td>
-                            <td>Phone Number</td>
-                            <td>{{orderDetails.phone_number}}</td>
-                        </tr>
-                        <tr>
-                            <td>Shipping Address</td>
-                            <td colspan="3">{{orderDetails.shipping_address}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="mt-30 bg-white form-title">Order List</div>
-
-                    <div class=" content-group">
-                        <div class="order-list-table-container">
-                            <table class="table" style="margin-top: -10px">
-                                <colgroup>
-                                    <col style="width: 150px;">
-                                    <col style="width: 200px">
-                                    <col >
-                                    <col style="width: 100px">
-                                    <col style="width: 100px">
-                                </colgroup>
-                                <thead>
-                                <tr>
-                                    <th class="text-left">Thumbnail</th>
-                                    <th class="text-left">Frame Name</th>
-                                    <th class="text-center">Size</th>
-                                    <th class="text-right">Print Price</th>
-                                    <th class="text-right">Frame Price</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="item in orderDetails.photos">
-
-                                    <td>
-                                        <div class="photo-thumbnail">
-                                            <img :src="item.original_url" alt="Image">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {{item.frame_name}}
-                                    </td>
-                                    <td class="text-center">
-                                        {{item.size}}
-                                    </td>
-                                    <td class="text-right">${{item.print_price.toFixed(2)}}</td>
-                                    <td class="text-right">${{item.frame_price.toFixed(2)}}</td>
-
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
 
-                    <div class="d-flex main-axis-space-between">
-                        <div></div>
-                        <div>
-                            <button class="mt-30 btn btn-blue btn-sm" onclick="closeModal()">Hide</button>
-                        </div>
+                <div class="d-flex main-axis-space-between">
+                    <div></div>
+                    <div>
+                        <button class="mt-30 btn btn-blue btn-sm" onclick="closeModal()">Hide</button>
                     </div>
                 </div>
             </div>
+        </div>
     </template>
 
     <template v-if="$route.path == '/user'">
@@ -645,22 +674,25 @@
             </main>
         </div>
         <div class="modal toast-modal">
-            <div class="modal-body">
+            <div class="modal-Body">
                 <form action="" class="auth-form">
                     <div class="auth-title">Reset Password</div>
                     <div class="form-combination ">
                         <label for="original-password">Original Password</label>
-                        <input type="password" id="original-password" name="original_password" v-model="resetForm.original_password" class="form-element">
+                        <input type="password" id="original-password" name="original_password"
+                               v-model="resetForm.original_password" class="form-element">
                     </div>
 
                     <div class="form-combination mt-20">
                         <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" name="new_password" v-model="resetForm.new_password"  class="form-element">
+                        <input type="password" id="new-password" name="new_password" v-model="resetForm.new_password"
+                               class="form-element">
                     </div>
 
                     <div class="form-combination mt-20">
                         <label for="repeat-password1">Repeat Password</label>
-                        <input type="password" id="repeat-password1" name="repeat_password" v-model="resetForm.repeat_password"  class="form-element">
+                        <input type="password" id="repeat-password1" name="repeat_password"
+                               v-model="resetForm.repeat_password" class="form-element">
                     </div>
 
                     <button class="btn btn-blue mt-30 auth-btn" @click.prevent="resetUserPassword">Reset</button>
@@ -680,7 +712,7 @@
     });
 
     request.interceptors.request.use(config => {
-        config.url += `?token=${localStorage.getItem("token")}`
+        config.url += `?token=${localStorage.getItem("user_token")}`
         return config;
     })
 
@@ -688,13 +720,12 @@
         return res.data;
     }, (e) => {
         if (e.response.status == 401) {
-            if (localStorage.getItem("token")) app.logout();
-            alert(e.response.data.msg)
+            if (localStorage.getItem("user_token")) app.logout();
+            router.push('/login')
         } else if (e.response.status == 404) {
             return [];
-        } else {
-            alert(e.response.data.msg)
         }
+        app.openMsg(e.response.data.msg);
     })
 
     const router = new VueRouter({
@@ -709,6 +740,7 @@
     const app = new Vue({
         router,
         data: {
+            aa: null,
             loginForm: {
                 email: "user@eaphoto.com",
                 password: "user"
@@ -738,28 +770,31 @@
             frame: {},
 
             cartList: [],
-            cartDesc:{},
+            cartDesc: {},
 
-            submitOrderForm:{
-                full_name:"",
-                phone_number:"",
-                shipping_address:"",
-                card_number:"",
-                name_on_card:"",
-                exp_date:"",
-                cvv:""
+            submitOrderForm: {
+                full_name: "",
+                phone_number: "",
+                shipping_address: "",
+                card_number: "",
+                name_on_card: "",
+                exp_date: "",
+                cvv: ""
             },
-            checkOutPhotoList:[],
+            checkOutPhotoList: [],
 
-            orderList:[],
-            orderDetails:{},
+            orderList: [],
+            orderDetails: {},
 
-            userInfo:{},
-            resetForm:{
-                original_password:"",
-                new_password:"",
-                repeat_password:""
-            }
+            userInfo: {},
+            resetForm: {
+                original_password: "",
+                new_password: "",
+                repeat_password: ""
+            },
+
+            flag: false,
+            msg: ""
         },
         created() {
             this.init();
@@ -772,25 +807,36 @@
                 this.init();
             },
         },
-        computed:{
-            getCartTotal(){
+        computed: {
+            getCartTotal() {
                 let total = 0;
-                this.cartList.filter(item=>{
-                    if(item.selected) total+= item.print_price + item.frame_price;
+                this.cartList.filter(item => {
+                    if (item.selected) total += item.print_price + item.frame_price;
                 })
                 return total.toFixed(2);
             },
-            getCheckoutTotal(){
+            getCheckoutTotal() {
                 let total = 0;
-                this.checkOutPhotoList.filter(item=>{
-                    total+= item.print_price + item.frame_price;
+                this.checkOutPhotoList.filter(item => {
+                    total += item.print_price + item.frame_price;
                 })
                 return total.toFixed(2);
             }
         },
         methods: {
+            openMsg(msg) {
+                this.msg = msg;
+                this.flag = true;
+                setTimeout(() => {
+                    this.closeMsg()
+                }, 800)
+
+            },
+            closeMsg() {
+                this.flag = false;
+            },
             init() {
-                this.isLogin = localStorage.getItem('token') ? 1 : 0;
+                this.isLogin = localStorage.getItem("user_token") ? 1 : 0;
                 let path = this.$route.path;
                 if (path == '/size') {
                     this.getSize();
@@ -809,18 +855,28 @@
                     })
                 } else if (path == '/cart') {
                     this.getCart();
-                } else if(path == '/checkOut'){
+                } else if (path == '/checkOut') {
                     let data = [];
-                    if(this.$route.query.data){
+                    if (this.$route.query.data) {
                         data = JSON.parse(this.$route.query.data)
                     }
-                    if(data.length == 0) this.$router.push('/cart');
+                    if (data.length == 0) this.$router.push('/cart');
                     this.checkOutPhotoList = data;
-                }else if(path =='/orders'){
+                } else if (path == '/orders') {
                     this.getOrders();
-                }else if(path == '/user'){
+                } else if (path == '/user') {
                     this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
                 }
+                this.$nextTick(() => {
+                    let timer = null;
+                    let num = 0;
+                    timer = setInterval(() => {
+                        num += 0.1;
+                        if (num >= 1) return clearInterval(timer);
+                        document.querySelector('.layout-container').style.opacity = num;
+                    }, 20)
+
+                })
             },
             loginHandle() {
                 request({
@@ -829,9 +885,10 @@
                     data: this.loginForm
                 }).then(res => {
                     if (res.msg == 'success') {
-                        localStorage.setItem("token", res.data.token);
+                        localStorage.setItem("user_token", res.data.token);
                         localStorage.setItem("userInfo", JSON.stringify(res.data));
                         this.$router.push('/home');
+                        this.openMsg(res.msg);
                     }
                 })
             },
@@ -852,6 +909,8 @@
                                 repeat_password: ""
                             }
                         );
+                        this.openMsg(res.msg);
+
                     }
                 })
             },
@@ -861,7 +920,9 @@
                     url: "/client/size",
                     method: 'get',
                 }).then(res => {
-                    this.sizeList = res.data;
+                    if (res.msg == 'success') {
+                        this.sizeList = res.data;
+                    }
                 })
             },
 
@@ -871,7 +932,9 @@
                     url: "/client/photo/size/" + this.$route.query.selectSizeId,
                     method: "get",
                 }).then(res => {
-                    this.photoList = res.data;
+                    if (res.msg == 'success') {
+                        this.photoList = res.data;
+                    }
                 })
             },
 
@@ -892,8 +955,11 @@
                     method: "post",
                     data: {photo_id_list: ids}
                 }).then(res => {
-                    this.getPhotos();
-                    this.$router.push('/cart');
+                    if (res.msg == 'success') {
+                        this.getPhotos();
+                        this.$router.push('/cart');
+                        this.openMsg(res.msg);
+                    }
                 });
             },
 
@@ -908,9 +974,12 @@
                     method: 'post',
                     data: fileData
                 }).then(res => {
-                    event.target.value = '';
-                    console.log(res)
-                    this.getPhotos();
+                    if (res.msg == 'success') {
+                        event.target.value = '';
+                        console.log(res)
+                        this.getPhotos();
+                    }
+                    this.openMsg(res.msg)
                 })
             },
             deletePhotoById(id) {
@@ -919,11 +988,15 @@
                     method: 'delete',
                 }).then(res => {
                     console.log(res)
-                    if(this.$route.path == '/cart'){
-                        this.getCart();
-                    }else{
-                        this.getPhotos();
+                    if (res.msg == 'success') {
+                        if (this.$route.path == '/cart') {
+                            this.getCart();
+                        } else {
+                            this.getPhotos();
+                        }
                     }
+                    this.openMsg(res.msg);
+
                 })
             },
             editPhotoHandle(item) {
@@ -1074,7 +1147,10 @@
                             method: "post",
                             data: fileData
                         }).then(res => {
-                            _this.$router.go(-1);
+                            if (res.msg == 'success') {
+                                _this.$router.go(-1);
+                                _this.openMsg(res.msg);
+                            }
                         })
                     });
 
@@ -1083,10 +1159,15 @@
             },
 
             setFrameHandle(item) {
-                console.log({...this.$route.query, url: item.original_url, photoId: item.id, framedUrl: item.framed_url,size:item.size})
                 this.$router.push({
                     path: '/frame',
-                    query: {...this.$route.query, url: item.original_url, photoId: item.id, framedUrl: item.framed_url,size:item.size}
+                    query: {
+                        ...this.$route.query,
+                        url: item.edited_url || item.original_url,
+                        photoId: item.id,
+                        framedUrl: item.framed_url,
+                        size: item.size || this.$route.query.selectSize
+                    }
                 })
             },
 
@@ -1095,7 +1176,10 @@
                     url: "/client/frame",
                     method: "get",
                 }).then(res => {
-                    this.frameList = res.data;
+                    if (res.msg == 'success') {
+                        console.log(this.$route.query)
+                        this.frameList = res.data.filter(item => item.size == this.$route.query.size);
+                    }
                 })
             },
 
@@ -1126,13 +1210,16 @@
                         method: "post",
                         data: fileData
                     }).then(res => {
-                        this.$router.go(-1);
+                        if (res.msg == 'success') {
+                            this.$router.go(-1);
+                            this.openMsg(res.msg);
+                        }
                     })
                 })
             },
 
             drawFrame(item) {
-                if (item.size !== this.$route.query.selectSize&&item.size !== this.$route.query.size) return alert("size not match");
+                if (item.size !== this.$route.query.selectSize && item.size !== this.$route.query.size) return alert("size not match");
                 let canvas = this.frameCanvas;
                 let ctx = canvas.getContext('2d');
                 let _this = this;
@@ -1165,52 +1252,61 @@
                     url: "/client/cart",
                     method: "get",
                 }).then(res => {
-                    this.cartList = res.data.map(item=>{
-                        return{
-                            ...item,
-                            selected:false
-                        }
-                    });
+                    if (res.msg == 'success') {
+                        this.cartList = res.data.map(item => {
+                            return {
+                                ...item,
+                                selected: false
+                            }
+                        });
+                    }
                 })
             },
 
-            checkOutHandle(){
-                if(this.cartList.filter(item=>item.selected).length ==0) return;
-                this.$router.push({path:"/checkOut",query:{data:JSON.stringify(this.cartList.filter(item=>item.selected))}})
+            checkOutHandle() {
+                if (this.cartList.filter(item => item.selected).length == 0) return;
+                this.$router.push({
+                    path: "/checkOut",
+                    query: {data: JSON.stringify(this.cartList.filter(item => item.selected))}
+                })
             },
 
-            creteOrder(){
+            creteOrder() {
                 request({
-                    url:"/client/order",
-                    method:"post",
-                    data:{
+                    url: "/client/order",
+                    method: "post",
+                    data: {
                         ...this.submitOrderForm,
-                        photo_id_list: this.checkOutPhotoList.map(item=>item.id),
+                        photo_id_list: this.checkOutPhotoList.map(item => item.id),
                     }
-                }).then(res=>{
-                    this.$router.push('/orders');
-                    Object.assign(this.submitOrderForm,{
-                        full_name:"",
-                        phone_number:"",
-                        shipping_address:"",
-                        card_number:"",
-                        name_on_card:"",
-                        exp_date:"",
-                        cvv:""
-                    });
+                }).then(res => {
+                    if (res.msg == 'success') {
+                        this.$router.push('/orders');
+                        Object.assign(this.submitOrderForm, {
+                            full_name: "",
+                            phone_number: "",
+                            shipping_address: "",
+                            card_number: "",
+                            name_on_card: "",
+                            exp_date: "",
+                            cvv: ""
+                        });
+                    }
+                    this.openMsg(res.msg);
+
                 });
             },
 
-            getOrders(){
+            getOrders() {
                 request({
-                    url:"/client/order",
-                    method:"get",
-                }).then(res=>{
+                    url: "/client/order",
+                    method: "get",
+                }).then(res => {
                     this.orderList = res.data;
                 })
             },
 
-            getOrderDetails(item){
+            getOrderDetails(item) {
                 this.orderDetails = item;
                 openModal("#orderDetails")
             },
@@ -1220,23 +1316,29 @@
                     url: "/client/logout",
                     method: "post",
                 }).then(res => {
-                    this.$router.push('/login')
-                    localStorage.clear();
-                    sessionStorage.clear();
+                    if (res.msg == 'success') {
+                        this.$router.push('/login')
+                        localStorage.clear();
+                        sessionStorage.clear();
+                    }
+                    this.openMsg(res.msg);
                 })
             },
-            resetUserPassword(){
+            resetUserPassword() {
                 request({
-                    url:"/client/user/reset",
-                    method:"post",
-                    data:this.resetForm
-                }).then(res=>{
-                    closeModal();
-                    Object.assign(this.resetForm,{
-                        original_password:"",
-                        new_password:"",
-                        repeat_password:""
-                    })
+                    url: "/client/user/reset",
+                    method: "post",
+                    data: this.resetForm
+                }).then(res => {
+                    if (res.msg == 'success') {
+                        closeModal();
+                        Object.assign(this.resetForm, {
+                            original_password: "",
+                            new_password: "",
+                            repeat_password: ""
+                        })
+                    }
+                    this.openMsg(res.msg);
                 })
             },
         },
@@ -1246,7 +1348,7 @@
         document.querySelector(".modal").style.display = "flex";
     }
 
-    function closeModal(){
+    function closeModal() {
         document.querySelector(".modal").style.display = "none";
     }
 </script>
